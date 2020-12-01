@@ -1,0 +1,14 @@
+<div class="container" *ngIf="showInitializing">
+    <div class="row">
+        <div class="col-md col-sm">
+            <p class="lead">Initializing...</p>
+        </div>
+    </div>
+</div>
+<div *ngIf="!showInitializing" class="container">
+    <div class="row">
+        <div class="col">
+            Here is the main component...
+        </div>
+    </div>
+</div>
