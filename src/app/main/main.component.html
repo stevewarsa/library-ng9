@@ -6,9 +6,25 @@
     </div>
 </div>
 <div *ngIf="!showInitializing" class="container">
-    <div class="row">
-        <div class="col">
-            Here is the main component...
+    <h3>Books in Library</h3>
+    <div class="card" *ngFor="let book of books">
+        <div class="card-header container-fluid">
+            <div class="row">
+                <div class="col-9">
+                    <h5>{{book.title}}</h5>
+                </div>
+                <div class="col text-right">
+                    <button type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h6 *ngIf="book.subtitle !== 'N/A'" class="card-subtitle mb-2 text-muted">{{book.subtitle}}</h6>
+            <p class="card-text"><strong>Author: </strong>{{book.author}}</p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Location: </strong>{{book.bookLocation}}</p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Shelf/Row: </strong>{{book.shelf}}</p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Position in Row: </strong>{{book.positionInRow}}</p>
+            <p class="card-text"><strong>Book Type: </strong>{{book.type_of_book}}</p>
         </div>
     </div>
 </div>
