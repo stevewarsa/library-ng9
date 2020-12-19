@@ -6,8 +6,27 @@
     </div>
 </div>
 <div *ngIf="!showInitializing" class="container">
-    <h3>Books in Library</h3>
-    <div class="card" *ngFor="let book of books">
+    <h3>{{filteredBooks.length}} Books in Library</h3>
+    <div class="row mb-2">
+        <div class="col">
+            <input [(ngModel)]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <select [(ngModel)]="filterCategory" class="form-control" id="filterCategory" name="filterCategory" (change)="onFilterCategory($event)">
+                <option value="NOSELECTION"></option>
+                <option *ngFor="let category of categories" value="{{category}}">{{category}}</option>
+            </select>
+        </div>
+        <div class="col">
+            <select [(ngModel)]="filterLocation" class="form-control" id="filterLocation" name="filterCategory" (change)="onFilterLocation($event)">
+                <option value="NOSELECTION"></option>
+                <option *ngFor="let location of locations" value="{{location}}">{{location}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="card" *ngFor="let book of filteredBooks">
         <div class="card-header container-fluid">
             <div class="row">
                 <div class="col-9">
