@@ -1,37 +1,26 @@
-<div class="container">
-    <h3>Current Reading List</h3>
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-9">
-                    <h3>Book Title</h3>
-                </div>
-                <div class="col text-right">
-                    <button type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <p class="card-text"><strong>Started Date: </strong>Jan 1, 2021</p>
-            <p class="card-text"><strong>Last Read Date: </strong>Jan 1, 2021</p>
-            <p class="card-text"><strong>Last Page Read: </strong>30</p>
+<div class="container" *ngIf="showInitializing">
+    <div class="row">
+        <div class="col-md col-sm">
+            <p class="lead">Initializing...</p>
         </div>
     </div>
-    <div class="card">
+</div>
+<div *ngIf="readingList && readingList.length" class="container">
+    <h3>Current Reading List</h3>
+    <div *ngFor="let readingItem of readingList" class="card">
         <div class="card-header">
             <div class="row">
                 <div class="col-9">
-                    <h3>2nd Book Title</h3>
-                </div>
-                <div class="col text-right">
-                    <button type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
+                    <h3>{{readingItem.title}}</h3>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <p class="card-text"><strong>Started Date: </strong>Jan 1, 2021</p>
-            <p class="card-text"><strong>Last Read Date: </strong>Jan 1, 2021</p>
-            <p class="card-text"><strong>Last Page Read: </strong>20</p>
+        <div *ngIf="readingDataByBookId && readingDataByBookId[readingItem.id]  && readingDataByBookId[readingItem.id].length" class="card-body">
+            <p class="card-text"><strong>Started Date: </strong>{{readingDataByBookId[readingItem.id][readingDataByBookId[readingItem.id].length - 1].readStartDate}}</p>
+            <p class="card-text"><strong>End Date: </strong>{{readingDataByBookId[readingItem.id][readingDataByBookId[readingItem.id].length - 1].readEndDate}}</p>
+            <p class="card-text"><strong>Last Page Read: </strong>{{readingDataByBookId[readingItem.id][readingDataByBookId[readingItem.id].length - 1].lastReadPage}}</p>
+            <p class="card-text"><strong>Pages Read: </strong>{{readingDataByBookId[readingItem.id][readingDataByBookId[readingItem.id].length - 1].pagesRead}}</p>
+            <p><a href="#" class="card-link">More...</a></p>
         </div>
     </div>
 </div>

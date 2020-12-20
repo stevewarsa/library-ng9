@@ -6,7 +6,12 @@
     </div>
 </div>
 <div *ngIf="!showInitializing" class="container">
-    <h3>{{filteredBooks.length}} Books in Library</h3>
+    <div class="row mb-2">
+        <div class="col-9"><h3>{{filteredBooks.length}} Books</h3></div>
+        <div *ngIf="!randomFiltered" class="col text-right"><button (click)="randomBook()" type="button" class="btn"><i class="fa fa-random fa-lg"></i></button></div>
+        <div *ngIf="randomFiltered" class="col text-right"><button (click)="revertRandomBook()" type="button" class="btn"><i class="fa fa-mail-reply fa-lg"></i></button></div>
+    </div>
+
     <div class="row mb-2">
         <div class="col">
             <input [(ngModel)]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">

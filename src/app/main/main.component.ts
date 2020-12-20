@@ -14,6 +14,7 @@ export class MainComponent implements OnInit {
     filterCategory: string = null;
     filterLocation: string = null;
     filterBook: string = null;
+    randomFiltered = false;
 
     constructor(private bookService: BookService) {
     }
@@ -31,6 +32,8 @@ export class MainComponent implements OnInit {
     }
 
     private doFilter() {
+        this.filteredBooks = [];
+        this.books.forEach(book => this.filteredBooks.push(book));
         if (this.filterBook !== null && this.filterBook.trim() !== "") {
             this.filteredBooks = this.books.filter(book => {
                 for (let field of ["subtitle", "title", "author"]) {
@@ -74,5 +77,19 @@ export class MainComponent implements OnInit {
     onFilterLocation(evt: any) {
         this.filterLocation = evt.target.value;
         this.doFilter();
+    }
+
+    randomBook() {
+        let randomBook = this.filteredBooks[Math.floor(Math.random() * Math.floor(this.filteredBooks.length - 1))];
+        if (randomBook) {
+            this.filteredBooks = this.filteredBooks.filter(bk => bk.id === randomBook.id);
+            this.randomFiltered = true;
+        }
+    }
+
+    revertRandomBook() {
+        this.books.forEach(book => this.filteredBooks.push(book));
+        this.doFilter();
+        this.randomFiltered = false;
     }
 }

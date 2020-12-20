@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Book } from './book';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
+import {ReadingData} from "src/app/reading-data";
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,17 @@ export class BookService {
   getBooks():Observable<any> {
     console.log('BookService.getBooks - calling ' + this._url + 'get_books.php...');
     return this.httpService.get(this._url + 'get_books.php');
+  }
+
+  getReadingData(): Observable<ReadingData[]> {
+    console.log('BookService.getBooks - calling ' + this._url + 'get_reading_data.php...');
+    return of([<ReadingData>{
+      bookId: 2,
+      lastReadPage: 20,
+      pagesRead: 2,
+      readStartDate: '12/20/2020 7:00',
+      readEndDate: '12/20/2020 7:20'
+    }]);
   }
 
   getRandomBook(bookType: string):Observable<Book> {
