@@ -14,20 +14,20 @@
 
     <div class="row mb-2">
         <div class="col">
-            <input [(ngModel)]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">
+            <input [ngModel]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">
         </div>
     </div>
     <div class="row mb-2">
         <div class="col">
-            <select [(ngModel)]="filterCategory" class="form-control" id="filterCategory" name="filterCategory" (change)="onFilterCategory($event)">
+            <select [ngModel]="filterCategory" class="form-control" id="filterCategory" name="filterCategory" (change)="onFilterCategory($event)">
                 <option value="NOSELECTION"></option>
-                <option *ngFor="let category of categories" value="{{category}}">{{category}}</option>
+                <option *ngFor="let category of bookTypes" value="{{category.value}}">{{category.label}}</option>
             </select>
         </div>
         <div class="col">
-            <select [(ngModel)]="filterLocation" class="form-control" id="filterLocation" name="filterCategory" (change)="onFilterLocation($event)">
+            <select [ngModel]="filterLocation" class="form-control" id="filterLocation" name="filterCategory" (change)="onFilterLocation($event)">
                 <option value="NOSELECTION"></option>
-                <option *ngFor="let location of locations" value="{{location}}">{{location}}</option>
+                <option *ngFor="let location of locations" value="{{location.value}}">{{location.label}}</option>
             </select>
         </div>
     </div>
@@ -35,20 +35,52 @@
         <div class="card-header container-fluid">
             <div class="row">
                 <div class="col-9">
-                    <h5>{{book.title}}</h5>
+                    <h5 *ngIf="!editing[book.id]">{{book.title}}</h5>
+                    <textarea class="form-control" *ngIf="editing[book.id]" type="text" [(ngModel)]="editingBook.title">
+                    </textarea>
                 </div>
                 <div class="col text-right">
-                    <button type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
+                    <button *ngIf="!editing[book.id]" (click)="editBook(book)" type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
+                    <button *ngIf="editing[book.id]" (click)="doSave(editingBook)" type="button" class="btn"><i class="fa fa-save fa-lg"></i></button>
+                    <button *ngIf="editing[book.id]" (click)="doDelete(editingBook)" type="button" class="btn"><i class="fa fa-remove fa-lg"></i></button>
+                    <button *ngIf="editing[book.id]" (click)="revertBookChanges(editingBook)" type="button" class="btn"><i class="fa fa-mail-reply-all fa-lg"></i></button>
                 </div>
             </div>
         </div>
         <div class="card-body">
-            <h6 *ngIf="book.subtitle !== 'N/A'" class="card-subtitle mb-2 text-muted">{{book.subtitle}}</h6>
-            <p class="card-text"><strong>Author: </strong>{{book.author}}</p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Location: </strong>{{book.bookLocation}}</p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Shelf/Row: </strong>{{book.shelf}}</p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Position in Row: </strong>{{book.positionInRow}}</p>
-            <p class="card-text"><strong>Book Type: </strong>{{book.type_of_book}}</p>
+            <h6 *ngIf="!editing[book.id]" class="card-subtitle mb-2 text-muted">{{book.subtitle}}</h6>
+            <textarea class="form-control" *ngIf="editing[book.id]" type="text" [(ngModel)]="editingBook.subtitle">
+            </textarea>
+            <p class="card-text"><strong>Author: </strong>
+                <span *ngIf="!editing[book.id]">{{book.author}}</span>
+                <textarea class="form-control" *ngIf="editing[book.id]" type="text" [(ngModel)]="editingBook.author">
+                </textarea>
+            </p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Location: </strong>
+                <span *ngIf="!editing[book.id]">{{book.bookLocation}}</span>
+                <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.bookLocation">
+                    <option value="N/A"></option>
+                    <option *ngFor="let location of locations" [ngValue]="location.value">{{location.label}}</option>
+                </select>
+            </p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Shelf/Row: </strong>
+                <span *ngIf="!editing[book.id]">{{book.shelf}}</span>
+                <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.shelf">
+                    <option *ngFor="let shelf of shelves" [ngValue]="shelf.value">{{shelf.label}}</option>
+                </select>
+            </p>
+            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Position in Row: </strong>
+                <span *ngIf="!editing[book.id]">{{book.positionInRow}}</span>
+                <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.positionInRow">
+                    <option *ngFor="let position of positions" [ngValue]="position.value">{{position.label}}</option>
+                </select>
+            </p>
+            <p class="card-text"><strong>Book Type: </strong>
+                <span *ngIf="!editing[book.id]">{{book.type_of_book}}</span>
+                <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.type_of_book">
+                    <option *ngFor="let bookType of bookTypes" [ngValue]="bookType.value">{{bookType.label}}</option>
+                </select>
+            </p>
         </div>
     </div>
 </div>

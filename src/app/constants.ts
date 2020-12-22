@@ -1,16 +1,13 @@
-import { SelectItem } from "primeng/primeng";
-
 export class Constants {
-  public static bookLocations: SelectItem[] = [
-    {label:'', value:null},
+  public static bookLocations: {label: string, value: string}[] = [
     {label:'Main by Computer Desk', value:"Main"},
-    {label:'Credenza by Computer Desk', value:"Credenza"},
+    /*{label:'Credenza by Computer Desk', value:"Credenza"},*/
     {label:'Bathroom Under Sink', value:"Bathroom"},
     {label:'Brian\'s Bedroom', value:"Brians BR"},
     {label:'Extra Storage Room', value:"Extra Rm"}
   ];
 
-  public static shelfs: SelectItem[] = [
+  public static shelfs: {label: string, value: number}[] = [
     {label:'', value:-1},
     {label:'1 (bottom)', value:1},
     {label:'2', value:2},
@@ -24,7 +21,7 @@ export class Constants {
     {label:'10', value:10}
   ];
 
-  public static positions: SelectItem[] = [
+  public static positions: {label: string, value: string}[] = [
     {label:'', value:null},
     {label:'Left', value:'Left'},
     {label:'Middle', value:'Middle'},
@@ -33,8 +30,7 @@ export class Constants {
     {label:'Bottom', value:'Bottom'}
   ];
 
-  public static bookTypes: SelectItem[] = [
-    {label:'', value:null},
+  public static bookTypes: {label: string, value: string}[] = [
     {label:'Kindle', value:'KINDLE'},
     {label:'Regular', value:'REGULAR'}
   ];

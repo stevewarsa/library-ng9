@@ -9,13 +9,17 @@ import { AppComponent } from './app.component';
 import { TopnavComponent } from './topnav/topnav.component';
 import { MainComponent } from './main/main.component';
 import { ReadingListComponent } from './reading-list/reading-list.component';
+import { ConfirmComponent } from './confirm/confirm.component';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TopnavComponent,
     MainComponent,
-    ReadingListComponent
+    ReadingListComponent,
+    ConfirmComponent,
+    AlertComponent
   ],
   imports: [
     BrowserModule,
