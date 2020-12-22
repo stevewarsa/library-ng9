@@ -8,10 +8,58 @@
 <div *ngIf="!showInitializing" class="container">
     <div class="row mb-2">
         <div class="col-9"><h3>{{filteredBooks.length}} Books</h3></div>
-        <div *ngIf="!randomFiltered" class="col text-right"><button (click)="randomBook()" type="button" class="btn"><i class="fa fa-random fa-lg"></i></button></div>
-        <div *ngIf="randomFiltered" class="col text-right"><button (click)="revertRandomBook()" type="button" class="btn"><i class="fa fa-mail-reply fa-lg"></i></button></div>
+        <div *ngIf="!randomFiltered" class="col text-right">
+            <button [hidden]="showAddBook" (click)="showNewBookForm()" title="New Book" type="button" class="btn mr-1"><i class="fa fa-plus fa-lg"></i></button>
+            <button [hidden]="!showAddBook" (click)="hideNewBookForm()" title="Hide 'Add Book' form" type="button" class="btn mr-1"><i class="fa fa-minus fa-lg"></i>
+            </button><button (click)="randomBook()" title="Random Book" type="button" class="btn"><i class="fa fa-random fa-lg"></i></button>
+        </div>
+        <div *ngIf="randomFiltered" class="col text-right"><button (click)="revertRandomBook()" title="Revert Random Book" type="button" class="btn"><i class="fa fa-mail-reply fa-lg"></i></button></div>
     </div>
-
+    <div *ngIf="showAddBook" class="row mb-2">
+        <div class="col">
+            <form class="mr-3 mb-2">
+                <div class="form-group">
+                    <label class="mr-2" for="bookType">Book Type:</label>
+                    <select class="form-control" id="bookType" name="bookType" [(ngModel)]="newBook.type_of_book">
+                        <option value="N/A"></option>
+                        <option *ngFor="let category of bookTypes" value="{{category.value}}">{{category.label}}</option>
+                    </select>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="title">Title:</label>
+                    <textarea #titleInput type="text" class="form-control" id="title" name="title" [(ngModel)]="newBook.title"></textarea>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="desc">Subtitle:</label>
+                    <textarea class="form-control" id="desc" name="desc" [(ngModel)]="newBook.subtitle"></textarea>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="desc">Author:</label>
+                    <textarea class="form-control" id="author" name="author" [(ngModel)]="newBook.author"></textarea>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="desc">Location:</label>
+                    <select class="form-control" id="location" name="location" [(ngModel)]="newBook.bookLocation">
+                        <option value="N/A"></option>
+                        <option *ngFor="let location of locations" value="{{location.value}}">{{location.label}}</option>
+                    </select>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="desc">Shelf:</label>
+                    <select class="form-control" id="shelf" name="shelf" [(ngModel)]="newBook.shelf">
+                        <option *ngFor="let shelf of shelves" [ngValue]="shelf.value">{{shelf.label}}</option>
+                    </select>
+                </div>
+                <div class="form-group mr-3">
+                    <label class="mr-2" for="desc">Position:</label>
+                    <select class="form-control" id="position" name="position" [(ngModel)]="newBook.positionInRow">
+                        <option *ngFor="let position of positions" [ngValue]="position.value">{{position.label}}</option>
+                    </select>
+                </div>
+                <button [disabled]="!newBook || !newBook.title || newBook.title.trim().length === 0" type="button" (click)="addBook()" class="btn btn-primary">Add Book</button>
+            </form>
+        </div>
+    </div>
     <div class="row mb-2">
         <div class="col">
             <input [ngModel]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">

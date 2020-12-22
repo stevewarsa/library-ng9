@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {BookService} from "src/app/book.service";
 import {Book} from "src/app/book";
 import {Constants} from "src/app/constants";
@@ -21,6 +21,9 @@ export class MainComponent implements OnInit {
     positions = Constants.positions;
     bookTypes = Constants.bookTypes;
     editingBook: Book = null;
+    showAddBook = false;
+    newBook: Book = new Book(null, null, null, null, -1, null, "N/A");
+    @ViewChild('titleInput') titleInput: ElementRef;
 
     constructor(private bookService: BookService, private modalHelperService: ModalHelperService) {
     }
@@ -136,5 +139,32 @@ export class MainComponent implements OnInit {
         // create a "deep copy" of the book so that any changes made are not applied until save is pressed
         this.editingBook = JSON.parse(JSON.stringify(book));
         this.editing[book.id] = true;
+    }
+
+    showNewBookForm() {
+        this.newBook = new Book(null, null, null, null, -1, null, "REGULAR");
+        this.showAddBook = true;
+        setTimeout(() => {
+            this.titleInput.nativeElement.focus();
+        }, 100);
+    }
+
+    addBook() {
+        this.bookService.addBook(this.newBook).subscribe(response => {
+            if (response === "success") {
+                this.showAddBook = false;
+                this.books.push(this.newBook);
+                this.doFilter();
+            } else {
+                this.modalHelperService.alert({message: "Error adding book: " + response, header: "Error!"}).result.then(() => {});
+            }
+        },
+            () => {
+                this.modalHelperService.alert({message: "Error with adding book ...", header: "Error!"}).result.then(() => {});
+            });
+    }
+
+    hideNewBookForm() {
+        this.showAddBook = false;
     }
 }
