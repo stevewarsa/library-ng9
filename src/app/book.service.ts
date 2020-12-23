@@ -42,7 +42,7 @@ export class BookService {
   }
 
   getReadingData(): Observable<ReadingData[]> {
-    console.log('BookService.getBooks - calling ' + this._url + 'get_reading_data.php...');
+    console.log('BookService.getReadingData - calling ' + this._url + 'get_reading_data.php...');
     return of([<ReadingData>{
       bookId: 2,
       lastReadPage: 20,
@@ -50,6 +50,11 @@ export class BookService {
       readStartDate: '12/20/2020 7:00',
       readEndDate: '12/20/2020 7:20'
     }]);
+  }
+
+  getReadingList(): Observable<Book[]> {
+    console.log('BookService.getReadingList - calling ' + this._url + 'get_reading_list.php...');
+    return this.httpService.get<Book[]>(this._url + 'get_reading_list.php');
   }
 
   getRandomBook(bookType: string):Observable<Book> {
@@ -65,5 +70,10 @@ export class BookService {
   getAuthors():Observable<any> {
     console.log('BookService.getAuthors - calling ' + this._url + 'get_authors.php...');
     return this.httpService.get(this._url + 'get_authors.php');
+  }
+
+  addToReadingList(bookId: number):Observable<any> {
+    console.log('BookService.addToReadingList - calling ' + this._url + 'add_to_reading_list.php...');
+    return this.httpService.get(this._url + 'add_to_reading_list.php?bookId=' + bookId);
   }
 }

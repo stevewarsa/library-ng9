@@ -16,11 +16,11 @@ export class ReadingListComponent implements OnInit {
 
   ngOnInit(): void {
     this.showInitializing = true;
-    let bookObs = this.bookService.getBooks();
+    let bookObs = this.bookService.getReadingList()
     let readingDataObs = this.bookService.getReadingData();
     forkJoin([bookObs, readingDataObs]).subscribe((response: any[]) => {
         console.log('ReadingListComponent.ngOnInit - bookService.getBooks().subscribe()...');
-        this.readingList = (response[0] as Book[]).filter(bk => bk.id === 2);
+        this.readingList = response[0];
         let readingData: ReadingData[] = response[1];
         readingData.forEach(rd => {
             let rdForBook: ReadingData[] = this.readingDataByBookId[rd.bookId];

@@ -3,6 +3,7 @@ import {BookService} from "src/app/book.service";
 import {Book} from "src/app/book";
 import {Constants} from "src/app/constants";
 import {ModalHelperService} from "src/app/modal-helper.service";
+import {Router} from "@angular/router";
 
 @Component({
     templateUrl: './main.component.html'
@@ -22,10 +23,10 @@ export class MainComponent implements OnInit {
     bookTypes = Constants.bookTypes;
     editingBook: Book = null;
     showAddBook = false;
-    newBook: Book = new Book(null, null, null, null, -1, null, "N/A");
+    newBook: Book = new Book(null, null, null, null, -1, null, "N/A", "N", "N");
     @ViewChild('titleInput') titleInput: ElementRef;
 
-    constructor(private bookService: BookService, private modalHelperService: ModalHelperService) {
+    constructor(private bookService: BookService, private modalHelperService: ModalHelperService, private route: Router) {
     }
 
     ngOnInit(): void {
@@ -142,7 +143,7 @@ export class MainComponent implements OnInit {
     }
 
     showNewBookForm() {
-        this.newBook = new Book(null, null, null, null, -1, null, "REGULAR");
+        this.newBook = new Book(null, null, null, null, -1, null, "REGULAR", "N", "N");
         this.showAddBook = true;
         setTimeout(() => {
             this.titleInput.nativeElement.focus();
@@ -166,5 +167,18 @@ export class MainComponent implements OnInit {
 
     hideNewBookForm() {
         this.showAddBook = false;
+    }
+
+    addToReadingList(book: Book) {
+        this.bookService.addToReadingList(book.id).subscribe(response => {
+            if (response === "success") {
+                this.route.navigate(['readingList']);
+            } else {
+                this.modalHelperService.alert({message: "Error adding book to reading list: " + response, header: "Error!"}).result.then(() => {});
+            }
+        },
+            () => {
+                this.modalHelperService.alert({message: "Error adding book to reading list ...", header: "Error!"}).result.then(() => {});
+            });
     }
 }

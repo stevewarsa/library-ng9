@@ -7,6 +7,8 @@ export class Book {
         public bookLocation: string,
         public shelf: number,
         public positionInRow: string,
-        public type_of_book: string
+        public type_of_book: string,
+        public in_reading_list: string,
+        public finished_reading: string
     ) { }
 }

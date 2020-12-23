@@ -4,7 +4,7 @@ header('Content-Type: application/json; charset=utf8');
 
 $db = new SQLite3('../db/library.sqlite');
 
-$results = $db->query('select id, title, subtitle, author, type_of_book, book_location, shelf, position_in_row, in_reading_list, finished_reading from book order by LOWER(title)');
+$results = $db->query("select id, title, subtitle, author, type_of_book, book_location, shelf, position_in_row, in_reading_list, finished_reading from book where in_reading_list = 'Y' order by LOWER(title)");
 $arrayName = array();
 while ($row = $results->fetchArray()) {
 	$book = new stdClass;
