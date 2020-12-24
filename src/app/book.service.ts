@@ -52,6 +52,34 @@ export class BookService {
     }]);
   }
 
+  filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string): Observable<Book[]> {
+    return of(books.filter(book => {
+      let matches = false;
+      if (textFilter !== null && textFilter.trim() !== "") {
+        // there is a text filter, so match on that
+        for (let field of ["subtitle", "title", "author"]) {
+          if (book[field] && book[field].toUpperCase().includes(textFilter.toUpperCase())) {
+            matches = true;
+            break;
+          }
+        }
+      } else {
+        // there is no text filter, so everything is considered matching
+        matches = true;
+      }
+      // run the next set of filters
+      if (bookTypeFilter !== null && bookTypeFilter.trim() !== "" && bookTypeFilter !== "NOSELECTION") {
+        // there is a book type filter, so check the type of this book
+        matches = book.type_of_book !== bookTypeFilter;
+      }
+      if (bookLocationFilter !== null && bookLocationFilter.trim() !== "" && bookLocationFilter !== "NOSELECTION") {
+        // there is a book location filter, so check the location of this book
+        matches = book.bookLocation === bookLocationFilter;
+      }
+      return matches;
+    }));
+  }
+
   getReadingList(): Observable<Book[]> {
     console.log('BookService.getReadingList - calling ' + this._url + 'get_reading_list.php...');
     return this.httpService.get<Book[]>(this._url + 'get_reading_list.php');

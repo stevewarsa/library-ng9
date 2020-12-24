@@ -25,6 +25,10 @@ export class MainComponent implements OnInit {
     showAddBook = false;
     newBook: Book = new Book(null, null, null, null, -1, null, "N/A", "N", "N");
     @ViewChild('titleInput') titleInput: ElementRef;
+    filtering = false;
+    serverCall = false;
+    serverCallMessage: string = null;
+    doingRandom = false;
 
     constructor(private bookService: BookService, private modalHelperService: ModalHelperService, private route: Router) {
     }
@@ -44,26 +48,14 @@ export class MainComponent implements OnInit {
         );
     }
 
-    private doFilter() {
-        this.filteredBooks = [];
-        this.books.forEach(book => this.filteredBooks.push(book));
-        if (this.filterBook !== null && this.filterBook.trim() !== "") {
-            this.filteredBooks = this.books.filter(book => {
-                for (let field of ["subtitle", "title", "author"]) {
-                    if (book[field] && book[field].toUpperCase().includes(this.filterBook.toUpperCase())) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-        }
-
-        if (this.filterCategory !== null && this.filterCategory !== "NOSELECTION") {
-            this.filteredBooks = this.filteredBooks.filter(book => book.type_of_book === this.filterCategory);
-        }
-        if (this.filterLocation !== null && this.filterLocation !== "NOSELECTION") {
-            this.filteredBooks = this.filteredBooks.filter(book => book.bookLocation === this.filterLocation);
-        }
+    private doFilter(showSpinner: boolean = true) {
+        this.filtering = showSpinner;
+        this.bookService.filterBookList(this.books, this.filterBook, this.filterCategory, this.filterLocation).subscribe(filteredBooks => {
+            setTimeout(() => {
+                this.filteredBooks = filteredBooks;
+                this.filtering = false;
+            }, 300);
+        });
     }
 
     filterItems(event: any) {
@@ -82,34 +74,48 @@ export class MainComponent implements OnInit {
     }
 
     randomBook() {
-        let randomBook = this.filteredBooks[Math.floor(Math.random() * Math.floor(this.filteredBooks.length - 1))];
-        if (randomBook) {
-            this.filteredBooks = this.filteredBooks.filter(bk => bk.id === randomBook.id);
-            this.randomFiltered = true;
-        }
+        this.doingRandom = true;
+        setTimeout(() => {
+            let randomBook = this.filteredBooks[Math.floor(Math.random() * Math.floor(this.filteredBooks.length - 1))];
+            if (randomBook) {
+                this.filteredBooks = this.filteredBooks.filter(bk => bk.id === randomBook.id);
+                this.randomFiltered = true;
+            }
+            this.doingRandom = false;
+        }, 300);
     }
 
     revertRandomBook() {
-        this.books.forEach(book => this.filteredBooks.push(book));
-        this.doFilter();
-        this.randomFiltered = false;
+        this.doingRandom = true;
+        setTimeout(() => {
+            this.books.forEach(book => this.filteredBooks.push(book));
+            this.doFilter(false);
+            this.randomFiltered = false;
+            this.doingRandom = false;
+        }, 300);
     }
 
     doSave(updatedBook: Book) {
         console.log("Updating book:");
         console.log(updatedBook);
+        this.serverCall = true;
+        this.serverCallMessage = "Updating book...";
         this.bookService.updateBook(updatedBook).subscribe(response => {
             if (response === "success") {
                 // copy all the properties of the book from the DB with the updatedBook
                 Object.assign(this.books.find(bk => bk.id === updatedBook.id), updatedBook);
                 this.editing[updatedBook.id] = false;
-                this.doFilter();
+                this.doFilter(false);
             } else {
                 this.modalHelperService.alert({message: "Error with updating book: " + response, header: "Error!"}).result.then(() => {});
             }
+            this.serverCall = false;
+            this.serverCallMessage = null;
         },
             () => {
                 this.modalHelperService.alert({message: "Error with updating book ...", header: "Error!"}).result.then(() => {});
+                this.serverCall = false;
+                this.serverCallMessage = null;
             });
     }
 
@@ -117,13 +123,17 @@ export class MainComponent implements OnInit {
         console.log("Deleting book:");
         console.log(deletedBook);
         this.modalHelperService.confirm({message: "Delete this book?"}).result.then(() => {
+            this.serverCall = true;
+            this.serverCallMessage = "Deleting book...";
             this.bookService.deleteBook(deletedBook.id).subscribe(response => {
                 if (response === "success") {
                     this.books = this.books.filter(bk => bk.id !== deletedBook.id);
-                    this.doFilter();
+                    this.doFilter(false);
                 } else {
                     this.modalHelperService.alert({message: "Error with deleting: " + response, header: "Error!"}).result.then(() => {});
                 }
+                this.serverCall = false;
+                this.serverCallMessage = null;
             });
         },
             () => {
@@ -151,17 +161,23 @@ export class MainComponent implements OnInit {
     }
 
     addBook() {
+        this.serverCall = true;
+        this.serverCallMessage = "Saving new book...";
         this.bookService.addBook(this.newBook).subscribe(response => {
             if (response === "success") {
                 this.showAddBook = false;
                 this.books.push(this.newBook);
-                this.doFilter();
+                this.doFilter(false);
             } else {
                 this.modalHelperService.alert({message: "Error adding book: " + response, header: "Error!"}).result.then(() => {});
             }
+            this.serverCall = false;
+            this.serverCallMessage = null;
         },
             () => {
                 this.modalHelperService.alert({message: "Error with adding book ...", header: "Error!"}).result.then(() => {});
+                this.serverCall = false;
+                this.serverCallMessage = null;
             });
     }
 
@@ -170,15 +186,26 @@ export class MainComponent implements OnInit {
     }
 
     addToReadingList(book: Book) {
+        this.serverCall = true;
+        this.serverCallMessage = "Adding book to reading list...";
         this.bookService.addToReadingList(book.id).subscribe(response => {
             if (response === "success") {
                 this.route.navigate(['readingList']);
             } else {
                 this.modalHelperService.alert({message: "Error adding book to reading list: " + response, header: "Error!"}).result.then(() => {});
             }
+            this.serverCall = false;
+            this.serverCallMessage = null;
         },
             () => {
                 this.modalHelperService.alert({message: "Error adding book to reading list ...", header: "Error!"}).result.then(() => {});
+                this.serverCall = false;
+                this.serverCallMessage = null;
             });
+    }
+
+    clearFilter() {
+        this.filterBook = "";
+        this.doFilter();
     }
 }

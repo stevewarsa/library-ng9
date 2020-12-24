@@ -1,19 +1,28 @@
-<div class="container" *ngIf="showInitializing">
+<div class="container" *ngIf="showInitializing && !serverCall">
     <div class="row">
         <div class="col-md col-sm">
             <p class="lead">Initializing...</p>
         </div>
     </div>
 </div>
-<div *ngIf="!showInitializing" class="container">
+<div class="container" *ngIf="serverCall">
+    <div class="row">
+        <div class="col-md col-sm">
+            <p class="lead">{{serverCallMessage}}</p><img src="assets/ajax-loader.gif"  alt="Calling server"/>
+        </div>
+    </div>
+</div>
+<div *ngIf="!showInitializing && !serverCall" class="container">
     <div class="row mb-2">
         <div class="col-9"><h3>{{filteredBooks.length}} Books</h3></div>
         <div *ngIf="!randomFiltered" class="col text-right">
             <button [hidden]="showAddBook" (click)="showNewBookForm()" title="New Book" type="button" class="btn mr-1"><i class="fa fa-plus fa-lg"></i></button>
             <button [hidden]="!showAddBook" (click)="hideNewBookForm()" title="Hide 'Add Book' form" type="button" class="btn mr-1"><i class="fa fa-minus fa-lg"></i>
-            </button><button (click)="randomBook()" title="Random Book" type="button" class="btn"><i class="fa fa-random fa-lg"></i></button>
+            </button>
+            <button (click)="randomBook()" title="Random Book" type="button" class="btn"><i class="fa fa-random fa-lg"></i></button>
         </div>
         <div *ngIf="randomFiltered" class="col text-right"><button (click)="revertRandomBook()" title="Revert Random Book" type="button" class="btn"><i class="fa fa-mail-reply fa-lg"></i></button></div>
+        <div *ngIf="doingRandom" class="spinner-border text-danger"></div>
     </div>
     <div *ngIf="showAddBook" class="row mb-2">
         <div class="col">
@@ -62,7 +71,11 @@
     </div>
     <div class="row mb-2">
         <div class="col">
-            <input [ngModel]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">
+            <div class="input-group">
+                <input [ngModel]="filterBook" type="text" class="form-control" placeholder="Filter Books" autofocus (keyup)="filterItems($event)">
+                <button *ngIf="filterBook && filterBook.trim().length" (click)="clearFilter()" type="button" class="btn bg-transparent" style="margin-left: -40px; z-index: 100;"><i class="fa fa-times"></i></button>
+                <div *ngIf="filtering" class="spinner-border text-info"></div>
+            </div>
         </div>
     </div>
     <div class="row mb-2">
