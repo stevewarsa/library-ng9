@@ -19,9 +19,11 @@ $type_of_book = $book->type_of_book;
 $book_location = $book->bookLocation;
 $shelf = $book->shelf;
 $position_in_row = $book->positionInRow;
+$finished = $book->finished_reading;
+$in_reading_list = $book->in_reading_list;
 
 $db = new SQLite3('../db/library.sqlite');
-$statement = $db->prepare('update book set title = :title, subtitle = :subtitle, author = :author,type_of_book = :type_of_book, book_location = :book_location, shelf = :shelf, position_in_row = :position_in_row where id = :id');
+$statement = $db->prepare('update book set title = :title, subtitle = :subtitle, author = :author,type_of_book = :type_of_book, book_location = :book_location, shelf = :shelf, position_in_row = :position_in_row, finished_reading = :finished_reading, in_reading_list = :in_reading_list where id = :id');
 $statement->bindValue(':id', $id);
 $statement->bindValue(':title', $title);
 $statement->bindValue(':subtitle', $subtitle);
@@ -30,6 +32,8 @@ $statement->bindValue(':type_of_book', $type_of_book);
 $statement->bindValue(':book_location', $book_location);
 $statement->bindValue(':shelf', $shelf);
 $statement->bindValue(':position_in_row', $position_in_row);
+$statement->bindValue(':finished_reading', $finished);
+$statement->bindValue(':in_reading_list', $in_reading_list);
 $statement->execute();
 $statement->close();
 

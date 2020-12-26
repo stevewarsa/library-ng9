@@ -52,7 +52,7 @@ export class BookService {
     }]);
   }
 
-  filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string): Observable<Book[]> {
+  filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string, filterShelf: number, filterInReadingList: boolean): Observable<Book[]> {
     return of(books.filter(book => {
       let matches = false;
       if (textFilter !== null && textFilter.trim() !== "") {
@@ -67,14 +67,23 @@ export class BookService {
         // there is no text filter, so everything is considered matching
         matches = true;
       }
+      if (matches) {
+        if (filterInReadingList === true) {
+          matches = book.in_reading_list === 'Y';
+        }
+      }
       // run the next set of filters
-      if (bookTypeFilter !== null && bookTypeFilter.trim() !== "" && bookTypeFilter !== "NOSELECTION") {
+      if (matches && bookTypeFilter !== null && bookTypeFilter.trim() !== "" && bookTypeFilter !== "NOSELECTION") {
         // there is a book type filter, so check the type of this book
         matches = book.type_of_book !== bookTypeFilter;
       }
-      if (bookLocationFilter !== null && bookLocationFilter.trim() !== "" && bookLocationFilter !== "NOSELECTION") {
+      if (matches && bookLocationFilter !== null && bookLocationFilter.trim() !== "" && bookLocationFilter !== "NOSELECTION") {
         // there is a book location filter, so check the location of this book
         matches = book.bookLocation === bookLocationFilter;
+      }
+      if (matches && filterShelf !== null && filterShelf !== -1) {
+        // there is a book shelf filter, so check the shelf of this book
+        matches = book.shelf === filterShelf;
       }
       return matches;
     }));

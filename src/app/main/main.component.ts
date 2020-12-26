@@ -15,6 +15,8 @@ export class MainComponent implements OnInit {
     filterCategory: string = null;
     filterLocation: string = null;
     filterBook: string = null;
+    filterShelf: number = -1;
+    filterInReadingList = false;
     randomFiltered = false;
     editing: {[bookId: number]: boolean} = {};
     locations = Constants.bookLocations;
@@ -50,7 +52,7 @@ export class MainComponent implements OnInit {
 
     private doFilter(showSpinner: boolean = true) {
         this.filtering = showSpinner;
-        this.bookService.filterBookList(this.books, this.filterBook, this.filterCategory, this.filterLocation).subscribe(filteredBooks => {
+        this.bookService.filterBookList(this.books, this.filterBook, this.filterCategory, this.filterLocation, this.filterShelf, this.filterInReadingList).subscribe(filteredBooks => {
             setTimeout(() => {
                 this.filteredBooks = filteredBooks;
                 this.filtering = false;
@@ -71,6 +73,28 @@ export class MainComponent implements OnInit {
     onFilterLocation(evt: any) {
         this.filterLocation = evt.target.value;
         this.doFilter();
+    }
+
+    onFilterShelf(evt: any) {
+        this.filterShelf = parseInt(evt.target.value);
+        this.doFilter();
+    }
+
+    onFilterInReadingList(evt: any) {
+        this.filterInReadingList = evt.target.checked;
+        this.doFilter();
+    }
+
+    onInReadingListChange(evt: any) {
+        console.log("onInReadingListChange - event is:");
+        console.log(evt.target.checked);
+        this.editingBook.in_reading_list = evt.target.checked ? "Y" : "N";
+    }
+
+    onFinishedReading(evt: any) {
+        console.log("onFinishedReading - event is:");
+        console.log(evt.target.checked);
+        this.editingBook.finished_reading = evt.target.checked ? "Y" : "N";
     }
 
     randomBook() {
@@ -189,10 +213,15 @@ export class MainComponent implements OnInit {
         this.serverCall = true;
         this.serverCallMessage = "Adding book to reading list...";
         this.bookService.addToReadingList(book.id).subscribe(response => {
-            if (response === "success") {
-                this.route.navigate(['readingList']);
-            } else {
+            if (response !== "success") {
                 this.modalHelperService.alert({message: "Error adding book to reading list: " + response, header: "Error!"}).result.then(() => {});
+            } else {
+                this.books.forEach(bk => {
+                    if (book.id === bk.id) {
+                        bk.in_reading_list = "Y";
+                    }
+                });
+                this.doFilter(false);
             }
             this.serverCall = false;
             this.serverCallMessage = null;
