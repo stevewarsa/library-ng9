@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Book } from './book';
 import {Observable, of, Subject} from 'rxjs';
 import {ReadingData} from "src/app/reading-data";
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,11 @@ export class BookService {
 
   constructor(private httpService: HttpClient) {
   }
-  
+
+  getCurrentDateTime() {
+    return moment().format("M/D/YYYY HH:mm:ss");
+  }
+
   addBook(book:Book):Observable<any> {
     console.log('BookService.addBook - calling server to add new book...');
     return this.httpService.post(this._url + 'add_book.php', book);
@@ -112,5 +117,15 @@ export class BookService {
   addToReadingList(bookId: number):Observable<any> {
     console.log('BookService.addToReadingList - calling ' + this._url + 'add_to_reading_list.php...');
     return this.httpService.get(this._url + 'add_to_reading_list.php?bookId=' + bookId);
+  }
+
+  startReadingSession(readingData: ReadingData):Observable<any> {
+    console.log('BookService.startReadingSession - calling ' + this._url + 'start_reading_session.php...');
+    return this.httpService.post<any>(this._url + 'start_reading_session.php', readingData);
+  }
+
+  endReadingSession(readingData: ReadingData):Observable<any> {
+    console.log('BookService.endReadingSession - calling ' + this._url + 'end_reading_session.php...');
+    return this.httpService.post<any>(this._url + 'end_reading_session.php', readingData);
   }
 }

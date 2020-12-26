@@ -4,6 +4,7 @@ import {Book} from "src/app/book";
 import {Constants} from "src/app/constants";
 import {ModalHelperService} from "src/app/modal-helper.service";
 import {Router} from "@angular/router";
+import {ReadingData} from "src/app/reading-data";
 
 @Component({
     templateUrl: './main.component.html'
@@ -31,6 +32,7 @@ export class MainComponent implements OnInit {
     serverCall = false;
     serverCallMessage: string = null;
     doingRandom = false;
+    readingBookNow: {[bookId: number]: boolean} = {};
 
     constructor(private bookService: BookService, private modalHelperService: ModalHelperService, private route: Router) {
     }
@@ -44,6 +46,7 @@ export class MainComponent implements OnInit {
                 this.books.forEach(book => {
                     this.filteredBooks.push(book);
                     this.editing[book.id] = false;
+                    this.readingBookNow[book.id] = false;
                 });
                 this.showInitializing = false;
             }
@@ -236,5 +239,65 @@ export class MainComponent implements OnInit {
     clearFilter() {
         this.filterBook = "";
         this.doFilter();
+    }
+
+    startReading(book: Book) {
+        this.modalHelperService.confirm({message: "Start reading session for this book?"}).result.then(() => {
+            console.log("User chose to start reading this book at " + new Date());
+            this.serverCall = true;
+            this.serverCallMessage = "Starting reading session...";
+            let param: ReadingData = <ReadingData>{
+                bookId: book.id,
+                readStartDate: this.bookService.getCurrentDateTime(),
+                pagesRead: null,
+                lastReadPage: null,
+                readEndDate: null,
+                percentageRead: null
+            };
+            this.bookService.startReadingSession(param).subscribe(response => {
+                if (response === "success") {
+                    this.readingBookNow[book.id] = true;
+                } else {
+                    this.modalHelperService.alert({message: "Error starting reading session: " + response, header: "Error!"}).result.then(() => {});
+                }
+                this.serverCall = false;
+                this.serverCallMessage = null;
+            },
+                () => {
+                    this.modalHelperService.alert({message: "Error starting reading session...", header: "Error!"}).result.then(() => {});
+                    this.serverCall = false;
+                    this.serverCallMessage = null;
+                });
+        }, () => console.log("User chose not to start reading..."));
+    }
+
+    stopReading(book: Book) {
+        this.modalHelperService.openStopReading(book).result.then((readingData: ReadingData) => {
+                console.log("User chose to end reading this book at " + new Date());
+                this.serverCall = true;
+                this.serverCallMessage = "Starting reading session...";
+                let param: ReadingData = <ReadingData>{
+                    bookId: book.id,
+                    pagesRead: readingData.pagesRead,
+                    lastReadPage: readingData.lastReadPage,
+                    readEndDate: this.bookService.getCurrentDateTime(),
+                    percentageRead: readingData.percentageRead
+                };
+                this.bookService.endReadingSession(param).subscribe(response => {
+                    if (response === "success") {
+                        this.readingBookNow[book.id] = false;
+                    } else {
+                        this.modalHelperService.alert({message: "Error ending reading session: " + response, header: "Error!"}).result.then(() => {});
+                    }
+                    this.serverCall = false;
+                    this.serverCallMessage = null;
+                },
+                    () => {
+                        this.modalHelperService.alert({message: "Error ending reading session...", header: "Error!"}).result.then(() => {});
+                        this.serverCall = false;
+                        this.serverCallMessage = null;
+                    });
+            },
+            () => console.log("User chose not to end reading session..."));
     }
 }

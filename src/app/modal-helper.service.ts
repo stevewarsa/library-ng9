@@ -3,6 +3,8 @@ import { DOCUMENT } from "@angular/common";
 import { NgbModal, NgbModalRef, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmComponent } from './confirm/confirm.component';
 import {AlertComponent} from "src/app/alert/alert.component";
+import {StopReadingComponent} from "src/app/stop-reading/stop-reading.component";
+import {Book} from "src/app/book";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +29,13 @@ export class ModalHelperService {
     const alertComp: AlertComponent = modalRef.componentInstance as AlertComponent;
     alertComp.header = obj.header || "Info";
     alertComp.message = obj.message;
+    return modalRef;
+  }
+
+  openStopReading(book: Book): NgbModalRef {
+    const modalRef: NgbModalRef = this.openModal(StopReadingComponent);
+    const stopReadingComp = modalRef.componentInstance as StopReadingComponent;
+    stopReadingComp.book = book;
     return modalRef;
   }
 

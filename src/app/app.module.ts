@@ -8,18 +8,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TopnavComponent } from './topnav/topnav.component';
 import { MainComponent } from './main/main.component';
-import { ReadingListComponent } from './reading-list/reading-list.component';
 import { ConfirmComponent } from './confirm/confirm.component';
 import { AlertComponent } from './alert/alert.component';
+import { StopReadingComponent } from './stop-reading/stop-reading.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TopnavComponent,
     MainComponent,
-    ReadingListComponent,
     ConfirmComponent,
-    AlertComponent
+    AlertComponent,
+    StopReadingComponent
   ],
   imports: [
     BrowserModule,
