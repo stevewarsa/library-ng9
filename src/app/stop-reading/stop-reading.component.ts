@@ -12,6 +12,7 @@ export class StopReadingComponent implements OnInit {
   pagesRead: number = null;
   endPage: number = null;
   percentageComplete: number = null;
+  sessionStartDateTime: string;
 
   constructor(public activeModal: NgbActiveModal) { }
 
@@ -20,6 +21,11 @@ export class StopReadingComponent implements OnInit {
   }
 
   doStop() {
-    this.activeModal.close(<ReadingData>{percentageRead: this.percentageComplete, lastReadPage: this.endPage, pagesRead: this.pagesRead});
+    this.activeModal.close(<ReadingData>{
+      percentageRead: this.percentageComplete,
+      lastReadPage: this.endPage,
+      pagesRead: this.pagesRead,
+      readStartDate: this.sessionStartDateTime
+    });
   }
 }

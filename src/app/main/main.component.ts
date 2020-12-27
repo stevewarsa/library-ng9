@@ -36,7 +36,6 @@ export class MainComponent implements OnInit {
     readingBookNow: {[bookId: number]: boolean} = {};
     bookHistoryExpanded: {[bookId: number]: boolean} = {};
     historyRecords: {[bookId: number]: ReadingData[]} = {};
-    obj = Object;
 
     constructor(private bookService: BookService, private modalHelperService: ModalHelperService) {
     }
@@ -60,6 +59,11 @@ export class MainComponent implements OnInit {
                         this.historyRecords[histRec.bookId].push(histRec);
                     } else {
                         this.historyRecords[histRec.bookId] = [histRec];
+                    }
+                    if (!histRec.readEndDate) {
+                        // this means that there is a history record for which no end date/time is set
+                        // so it is still in progress - so set the flag for this book
+                        this.readingBookNow[histRec.bookId] = true;
                     }
                 });
                 this.showInitializing = false;
@@ -270,7 +274,14 @@ export class MainComponent implements OnInit {
             };
             this.bookService.startReadingSession(param).subscribe(response => {
                 if (response === "success") {
+                    // since the response was success, set the flag indicating that this book is being read
                     this.readingBookNow[book.id] = true;
+                    // now push this record onto the history records related to this book id
+                    if (this.historyRecords.hasOwnProperty(book.id)) {
+                        this.historyRecords[book.id].push(param);
+                    } else {
+                        this.historyRecords[book.id] = [param];
+                    }
                 } else {
                     this.modalHelperService.alert({message: "Error starting reading session: " + response, header: "Error!"}).result.then(() => {});
                 }
@@ -286,7 +297,12 @@ export class MainComponent implements OnInit {
     }
 
     stopReading(book: Book) {
-        this.modalHelperService.openStopReading(book).result.then((readingData: ReadingData) => {
+        // I should be able to find a record in history records for this reading session where start date/time is
+        // populated and end date/time is not populated.  I need to get the start date/time from this history record
+        // so that I can close out the correct record on the server side.
+        let histRecordToBeStopped: ReadingData = this.historyRecords[book.id].find(histRec => histRec.readStartDate && !histRec.readEndDate);
+        let sessionStartDateTime: string = histRecordToBeStopped.readStartDate;
+        this.modalHelperService.openStopReading(book, sessionStartDateTime).result.then((readingData: ReadingData) => {
                 console.log("User chose to end reading this book at " + new Date());
                 this.serverCall = true;
                 this.serverCallMessage = "Starting reading session...";
@@ -294,12 +310,16 @@ export class MainComponent implements OnInit {
                     bookId: book.id,
                     pagesRead: readingData.pagesRead,
                     lastReadPage: readingData.lastReadPage,
+                    readStartDate: readingData.readStartDate,
                     readEndDate: this.bookService.getCurrentDateTime(),
                     percentageRead: readingData.percentageRead
                 };
                 this.bookService.endReadingSession(param).subscribe(response => {
                     if (response === "success") {
                         this.readingBookNow[book.id] = false;
+                        histRecordToBeStopped.readEndDate = param.readEndDate;
+                        histRecordToBeStopped.pagesRead = param.pagesRead;
+                        histRecordToBeStopped.lastReadPage = param.lastReadPage;
                     } else {
                         this.modalHelperService.alert({message: "Error ending reading session: " + response, header: "Error!"}).result.then(() => {});
                     }

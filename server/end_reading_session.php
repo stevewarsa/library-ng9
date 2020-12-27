@@ -15,15 +15,18 @@ $bookId = $readingData->bookId;
 $pagesRead = $readingData->pagesRead;
 $lastReadPage = $readingData->lastReadPage;
 $percentageRead = $readingData->percentageRead;
+$readStartDate = $readingData->readStartDate;
 $readEndDate = $readingData->readEndDate;
 $db = new SQLite3('../db/library.sqlite');
 $statement = $db->prepare("update reading_list set pages_read = :pages_read, last_page_read = :last_page_read, 
-                        percentage_read = :percentage_read, read_end_date_time = :read_end_date_time where book_id = :bookId");
+                        percentage_read = :percentage_read, read_end_date_time = :read_end_date_time 
+                        where book_id = :bookId and read_start_date_time = :read_start_date_time");
 $statement->bindValue(':pages_read', $pagesRead);
 $statement->bindValue(':last_page_read', $lastReadPage);
 $statement->bindValue(':percentage_read', $percentageRead);
 $statement->bindValue(':read_end_date_time', $readEndDate);
 $statement->bindValue(':bookId', $bookId);
+$statement->bindValue(':read_start_date_time', $readStartDate);
 $statement->execute();
 $statement->close();
 

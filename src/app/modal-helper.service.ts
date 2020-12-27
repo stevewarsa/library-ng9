@@ -32,10 +32,11 @@ export class ModalHelperService {
     return modalRef;
   }
 
-  openStopReading(book: Book): NgbModalRef {
+  openStopReading(book: Book, sessionStartDateTime: string): NgbModalRef {
     const modalRef: NgbModalRef = this.openModal(StopReadingComponent);
     const stopReadingComp = modalRef.componentInstance as StopReadingComponent;
     stopReadingComp.book = book;
+    stopReadingComp.sessionStartDateTime = sessionStartDateTime;
     return modalRef;
   }
 
