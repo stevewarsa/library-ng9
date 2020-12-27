@@ -108,18 +108,11 @@
     <div class="card" *ngFor="let book of filteredBooks">
         <div class="card-header container-fluid">
             <div class="row">
-                <div class="col-9">
+                <div class="col">
                     <h5 *ngIf="!editing[book.id]">{{book.title}}</h5>
                     <textarea class="form-control" *ngIf="editing[book.id]" type="text" [(ngModel)]="editingBook.title">
                     </textarea>
                 </div>
-<!--                <div class="col text-right">-->
-<!--                    <button *ngIf="!editing[book.id]" title="Edit Book" (click)="editBook(book)" type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>-->
-<!--                    <button *ngIf="!editing[book.id] && book.in_reading_list !== 'Y'" title="Add to Reading List" (click)="addToReadingList(book)" type="button" class="btn"><i class="fa fa-bookmark-o fa-lg"></i></button>-->
-<!--                    <button *ngIf="editing[book.id]" title="Save Changes" (click)="doSave(editingBook)" type="button" class="btn"><i class="fa fa-save fa-lg"></i></button>-->
-<!--                    <button *ngIf="editing[book.id]" title="Delete Book" (click)="doDelete(editingBook)" type="button" class="btn"><i class="fa fa-remove fa-lg"></i></button>-->
-<!--                    <button *ngIf="editing[book.id]" title="Revert Changes" (click)="revertBookChanges(editingBook)" type="button" class="btn"><i class="fa fa-mail-reply-all fa-lg"></i></button>-->
-<!--                </div>-->
             </div>
             <div class="btn-group" role="group" aria-label="Book Toolbar">
                 <button *ngIf="!editing[book.id]" title="Edit Book" (click)="editBook(book)" type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
@@ -176,6 +169,21 @@
                 <input [disabled]="true" *ngIf="!editing[book.id]" [checked]="book.in_reading_list === 'Y'" type="checkbox" id="readingList" name="readingList" class="form-check-input">
                 <label *ngIf="editing[book.id]" class="form-check-label mr-2 font-weight-bold" for="readingListEditing">In Reading List:</label>
                 <label *ngIf="!editing[book.id]" class="form-check-label mr-2 font-weight-bold" for="readingList">In Reading List:</label>
+            </div>
+            <div [hidden]="!historyRecords.hasOwnProperty(book.id)" class="row mb-3">
+                <div class="col"><button (click)="bookHistoryExpanded[book.id] = !bookHistoryExpanded[book.id]" class="btn font-weight-bolder"><i [ngClass]="{'fa-chevron-right': bookHistoryExpanded[book.id] === false, 'fa-chevron-down': bookHistoryExpanded[book.id] === true}" class="fa fa-lg align-text-center mr-2"></i> <span class="font-weight-bold mr-3">Reading History:</span></button></div>
+            </div>
+            <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row">
+                <div class="col font-weight-bold"><u>Start Date/Time</u></div>
+                <div class="col font-weight-bold"><u>End Date/Time</u></div>
+                <div class="col font-weight-bold"><u>Pages Read</u></div>
+                <div class="col font-weight-bold"><u>Last Page Read</u></div>
+            </div>
+            <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row" *ngFor="let histRec of sortRecsForBook(historyRecords[book.id])">
+                <div class="col font-weight-bold"><u>{{histRec.readStartDate}}</u></div>
+                <div class="col font-weight-bold"><u>{{histRec.readEndDate}}</u></div>
+                <div class="col font-weight-bold"><u>{{histRec.pagesRead}}</u></div>
+                <div class="col font-weight-bold"><u>{{histRec.lastReadPage}}</u></div>
             </div>
         </div>
     </div>

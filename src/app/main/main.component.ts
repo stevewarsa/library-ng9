@@ -3,8 +3,9 @@ import {BookService} from "src/app/book.service";
 import {Book} from "src/app/book";
 import {Constants} from "src/app/constants";
 import {ModalHelperService} from "src/app/modal-helper.service";
-import {Router} from "@angular/router";
 import {ReadingData} from "src/app/reading-data";
+import {forkJoin} from "rxjs";
+import * as moment from 'moment';
 
 @Component({
     templateUrl: './main.component.html'
@@ -33,20 +34,33 @@ export class MainComponent implements OnInit {
     serverCallMessage: string = null;
     doingRandom = false;
     readingBookNow: {[bookId: number]: boolean} = {};
+    bookHistoryExpanded: {[bookId: number]: boolean} = {};
+    historyRecords: {[bookId: number]: ReadingData[]} = {};
+    obj = Object;
 
-    constructor(private bookService: BookService, private modalHelperService: ModalHelperService, private route: Router) {
+    constructor(private bookService: BookService, private modalHelperService: ModalHelperService) {
     }
 
     ngOnInit(): void {
         this.showInitializing = true;
-        this.bookService.getBooks().subscribe(
-            books => {
+        let readingDataObs = this.bookService.getReadingData();
+        let booksObs = this.bookService.getBooks();
+        forkJoin([booksObs, readingDataObs]).subscribe(
+            response => {
                 console.log('MainComponent.ngOnInit - bookService.getBooks().subscribe()...');
-                this.books = books;
+                this.books = response[0];
                 this.books.forEach(book => {
                     this.filteredBooks.push(book);
                     this.editing[book.id] = false;
                     this.readingBookNow[book.id] = false;
+                    this.bookHistoryExpanded[book.id] = false;
+                });
+                response[1].forEach(histRec => {
+                    if (this.historyRecords.hasOwnProperty(histRec.bookId)) {
+                        this.historyRecords[histRec.bookId].push(histRec);
+                    } else {
+                        this.historyRecords[histRec.bookId] = [histRec];
+                    }
                 });
                 this.showInitializing = false;
             }
@@ -299,5 +313,17 @@ export class MainComponent implements OnInit {
                     });
             },
             () => console.log("User chose not to end reading session..."));
+    }
+
+    sortRecsForBook(historyRecords: ReadingData[]) {
+        if (!historyRecords || historyRecords.length < 2) {
+            return historyRecords;
+        } else {
+            return historyRecords.sort((a, b) => {
+                const date1 = moment(a.readStartDate, 'M/D/YYYY HH:mm:ss');
+                const date2 = moment(b.readStartDate, 'M/D/YYYY HH:mm:ss');
+                return date1.diff(date2);
+            });
+        }
     }
 }
