@@ -49,13 +49,6 @@ export class BookService {
   getReadingData(): Observable<ReadingData[]> {
     console.log('BookService.getReadingData - calling ' + this._url + 'get_reading_data.php...');
     return this.httpService.get<ReadingData[]>(this._url + 'get_reading_data.php');
-    // return of([<ReadingData>{
-    //   bookId: 2,
-    //   lastReadPage: 20,
-    //   pagesRead: 2,
-    //   readStartDate: '12/20/2020 7:00',
-    //   readEndDate: '12/20/2020 7:20'
-    // }]);
   }
 
   filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string, filterShelf: number, filterInReadingList: boolean): Observable<Book[]> {
@@ -81,7 +74,7 @@ export class BookService {
       // run the next set of filters
       if (matches && bookTypeFilter !== null && bookTypeFilter.trim() !== "" && bookTypeFilter !== "NOSELECTION") {
         // there is a book type filter, so check the type of this book
-        matches = book.type_of_book !== bookTypeFilter;
+        matches = book.type_of_book === bookTypeFilter;
       }
       if (matches && bookLocationFilter !== null && bookLocationFilter.trim() !== "" && bookLocationFilter !== "NOSELECTION") {
         // there is a book location filter, so check the location of this book

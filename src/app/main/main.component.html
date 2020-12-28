@@ -174,16 +174,20 @@
                 <div class="col"><button (click)="bookHistoryExpanded[book.id] = !bookHistoryExpanded[book.id]" class="btn font-weight-bolder"><i [ngClass]="{'fa-chevron-right': bookHistoryExpanded[book.id] === false, 'fa-chevron-down': bookHistoryExpanded[book.id] === true}" class="fa fa-lg align-text-center mr-2"></i> <span class="font-weight-bold mr-3">Reading History:</span></button></div>
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row">
-                <div class="col font-weight-bold"><u>Start Date/Time</u></div>
-                <div class="col font-weight-bold"><u>End Date/Time</u></div>
-                <div class="col font-weight-bold"><u>Pages Read</u></div>
-                <div class="col font-weight-bold"><u>Last Page Read</u></div>
+                <div class="col font-weight-bold"><u>Date</u></div>
+                <div class="col-5 font-weight-bold"><u>Time</u></div>
+                <div class="col font-weight-bold"><u>Pgs</u></div>
+                <div class="col font-weight-bold"><u>L.Pg</u></div>
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row" *ngFor="let histRec of sortRecsForBook(historyRecords[book.id])">
-                <div class="col font-weight-bold"><u>{{histRec.readStartDate}}</u></div>
-                <div class="col font-weight-bold"><u>{{histRec.readEndDate}}</u></div>
-                <div class="col font-weight-bold"><u>{{histRec.pagesRead}}</u></div>
-                <div class="col font-weight-bold"><u>{{histRec.lastReadPage}}</u></div>
+                <div class="col">
+                    {{getDateOnlyString(histRec.readStartDate)}}
+                </div>
+                <div class="col-5">
+                    {{getTimeRange(histRec)}}
+                </div>
+                <div class="col">{{histRec.pagesRead}}</div>
+                <div class="col">{{histRec.lastReadPage}}</div>
             </div>
         </div>
     </div>

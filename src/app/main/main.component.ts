@@ -82,8 +82,10 @@ export class MainComponent implements OnInit {
     }
 
     filterItems(event: any) {
-        this.filterBook = event.target.value;
-        this.doFilter();
+        if (event.target.value.length > 2) {
+            this.filterBook = event.target.value;
+            this.doFilter();
+        }
     }
 
     onFilterCategory(evt: any) {
@@ -342,8 +344,24 @@ export class MainComponent implements OnInit {
             return historyRecords.sort((a, b) => {
                 const date1 = moment(a.readStartDate, 'M/D/YYYY HH:mm:ss');
                 const date2 = moment(b.readStartDate, 'M/D/YYYY HH:mm:ss');
-                return date1.diff(date2);
+                return date2.diff(date1);
             });
         }
+    }
+
+    getDateOnlyString(dateTimeString: string): string {
+        const dt = moment(dateTimeString, 'M/D/YYYY HH:mm:ss');
+        const current = moment();
+        if (dt.year() == current.year()) {
+            return dt.format("M/D");
+        } else {
+            return dt.format("M/D/YY");
+        }
+    }
+
+    getTimeRange(histRecord: ReadingData): string {
+        const startDateTime = moment(histRecord.readStartDate, "M/D/YYYY HH:mm:ss");
+        const endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
+        return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss");
     }
 }
