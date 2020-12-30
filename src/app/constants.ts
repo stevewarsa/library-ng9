@@ -32,6 +32,10 @@ export class Constants {
 
   public static bookTypes: {label: string, value: string}[] = [
     {label:'Kindle', value:'KINDLE'},
+    {label:'Audible', value:'AUDIBLE'},
+    {label:'Christian Audio', value:'CHRSTNAUDIO'},
+    {label:'MP 3', value:'MP3'},
+    {label:'PDF', value:'PDF'},
     {label:'Regular', value:'REGULAR'}
   ];
 }

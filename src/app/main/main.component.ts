@@ -6,6 +6,7 @@ import {ModalHelperService} from "src/app/modal-helper.service";
 import {ReadingData} from "src/app/reading-data";
 import {forkJoin} from "rxjs";
 import * as moment from 'moment';
+import {StringUtils} from "src/app/string.utils";
 
 @Component({
     templateUrl: './main.component.html'
@@ -82,8 +83,8 @@ export class MainComponent implements OnInit {
     }
 
     filterItems(event: any) {
-        if (event.target.value.length > 2) {
-            this.filterBook = event.target.value;
+        if (event.target.value.trim().length > 2 || event.target.value.trim().length === 0) {
+            this.filterBook = event.target.value.trim();
             this.doFilter();
         }
     }
@@ -257,7 +258,7 @@ export class MainComponent implements OnInit {
     }
 
     clearFilter() {
-        this.filterBook = "";
+        this.filterBook = null;
         this.doFilter();
     }
 
@@ -361,7 +362,11 @@ export class MainComponent implements OnInit {
 
     getTimeRange(histRecord: ReadingData): string {
         const startDateTime = moment(histRecord.readStartDate, "M/D/YYYY HH:mm:ss");
-        const endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
-        return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss");
+        if (StringUtils.isEmpty(histRecord.readEndDate)) {
+            return "Started at: " + startDateTime.format("H:mm:ss");
+        } else {
+            const endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
+            return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss");
+        }
     }
 }
