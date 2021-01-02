@@ -11,6 +11,7 @@ import { MainComponent } from './main/main.component';
 import { ConfirmComponent } from './confirm/confirm.component';
 import { AlertComponent } from './alert/alert.component';
 import { StopReadingComponent } from './stop-reading/stop-reading.component';
+import { ReadingReportComponent } from './reading-report/reading-report.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { StopReadingComponent } from './stop-reading/stop-reading.component';
     MainComponent,
     ConfirmComponent,
     AlertComponent,
-    StopReadingComponent
+    StopReadingComponent,
+    ReadingReportComponent
   ],
   imports: [
     BrowserModule,

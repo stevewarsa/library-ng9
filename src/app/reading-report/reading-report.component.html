@@ -1,0 +1,58 @@
+<div class="container" *ngIf="busy">
+    <div class="row">
+        <div class="col">
+            <span class="lead">{{busyMessage}}</span> <img src="assets/ajax-loader.gif" alt="Loading"/>
+        </div>
+    </div>
+</div>
+<div class="container" *ngIf="!busy">
+    <div class="row">
+        <div class="col">
+            <h5 class="font-weight-bolder">Reading Report</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label class="radio-inline">
+                <input type="radio" name="mode" value="byDate" [(ngModel)]="mode"/>
+                By Date
+            </label>
+            <label class="radio-inline ml-1">
+                <input type="radio" name="mode" value="byBook" [(ngModel)]="mode"/>
+                By Book
+            </label>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col">
+            <button class="btn mr-3" (click)="expandAll()"><i class="fa fa-plus-square"></i> Expand All</button>
+            <button class="btn" (click)="collapseAll()"><i class="fa fa-minus-square"></i> Collapse All</button>
+        </div>
+    </div>
+    <div [hidden]="mode !== 'byDate'" *ngFor="let dateStr of obj.keys(readingReportByDate)" class="row mb-2">
+        <div class="col">
+            <button (click)="toggle(dateStr)" class="btn font-weight-bolder"><i
+                    [ngClass]="{'fa-chevron-right': expanded[dateStr] === false, 'fa-chevron-down': expanded[dateStr] === true}"
+                    class="fa fa-lg align-text-center mr-2"></i> <u>{{dateStr}}</u> ({{countByDate[dateStr]}})
+            </button>
+            <ol *ngIf="expanded[dateStr] === true">
+                <li class="form-control" *ngFor="let readingData of readingReportByDate[dateStr]">
+                    <span class="font-weight-bold">{{booksById[readingData.bookId]}}</span>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div [hidden]="mode !== 'byBook'" *ngFor="let bookId of obj.keys(readingReportByBook)" class="row mb-2">
+        <div class="col">
+            <button (click)="toggle(bookId)" class="btn font-weight-bolder"><i
+                    [ngClass]="{'fa-chevron-right': expanded[bookId] === false, 'fa-chevron-down': expanded[bookId] === true}"
+                    class="fa fa-lg align-text-center mr-2"></i> <u>{{booksById[bookId]}}</u> ({{countByBookId[bookId]}})
+            </button>
+            <ol *ngIf="expanded[bookId] === true">
+                <li *ngFor="let readingData of readingReportByBook[bookId]">
+                    <span class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.pagesRead}} page(s) read</span>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
