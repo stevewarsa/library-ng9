@@ -88,6 +88,17 @@ export class BookService {
     }));
   }
 
+  sortArrayByDate(array: any[], field: string, desc:boolean=false, dateFormat: string="M/D/YYYY HH:mm:ss'") {
+    return array.sort((a, b) => {
+      let dateStr1 = field ? a[field] : a;
+      let dateStr2 = field ? b[field] : b;
+      const date1 = moment(dateStr1, dateFormat);
+      const date2 = moment(dateStr2, dateFormat);
+      return desc ? date2.diff(date1) : date1.diff(date2);
+    });
+
+  }
+
   getReadingList(): Observable<Book[]> {
     console.log('BookService.getReadingList - calling ' + this._url + 'get_reading_list.php...');
     return this.httpService.get<Book[]>(this._url + 'get_reading_list.php');

@@ -86,4 +86,18 @@ export class ReadingReportComponent implements OnInit {
   toggle(category: string) {
     this.expanded[category] = true;
   }
+
+  sortByDateDesc(records: ReadingData[]): ReadingData[] {
+    return this.bookService.sortArrayByDate(records, "readEndDate", true);
+  }
+
+  sortByBookName(records: ReadingData[]) {
+    return records.sort(((a, b) => {
+      return this.booksById[a.bookId].localeCompare(this.booksById[b.bookId]);
+    }));
+  }
+
+  sortByDatesOnly(dates: string[]) {
+    return this.bookService.sortArrayByDate(dates, null, true, "M/D/YYYY");
+  }
 }

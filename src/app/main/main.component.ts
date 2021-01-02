@@ -342,11 +342,7 @@ export class MainComponent implements OnInit {
         if (!historyRecords || historyRecords.length < 2) {
             return historyRecords;
         } else {
-            return historyRecords.sort((a, b) => {
-                const date1 = moment(a.readStartDate, 'M/D/YYYY HH:mm:ss');
-                const date2 = moment(b.readStartDate, 'M/D/YYYY HH:mm:ss');
-                return date2.diff(date1);
-            });
+            return this.bookService.sortArrayByDate(historyRecords, "readStartDate", true);
         }
     }
 

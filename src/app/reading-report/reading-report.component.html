@@ -29,28 +29,28 @@
             <button class="btn" (click)="collapseAll()"><i class="fa fa-minus-square"></i> Collapse All</button>
         </div>
     </div>
-    <div [hidden]="mode !== 'byDate'" *ngFor="let dateStr of obj.keys(readingReportByDate)" class="row mb-2">
+    <div [hidden]="mode !== 'byDate'" *ngFor="let dateStr of sortByDatesOnly(obj.keys(readingReportByDate))" class="row mb-2">
         <div class="col">
             <button (click)="toggle(dateStr)" class="btn font-weight-bolder"><i
                     [ngClass]="{'fa-chevron-right': expanded[dateStr] === false, 'fa-chevron-down': expanded[dateStr] === true}"
-                    class="fa fa-lg align-text-center mr-2"></i> <u>{{dateStr}}</u> ({{countByDate[dateStr]}})
+                    class="fa fa-lg mr-2"></i> <u>{{dateStr}}</u> ({{countByDate[dateStr]}})
             </button>
             <ol *ngIf="expanded[dateStr] === true">
-                <li class="form-control" *ngFor="let readingData of readingReportByDate[dateStr]">
-                    <span class="font-weight-bold">{{booksById[readingData.bookId]}}</span>
+                <li *ngFor="let readingData of sortByBookName(readingReportByDate[dateStr])">
+                    <span class="font-weight-bold">{{booksById[readingData.bookId]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
                 </li>
             </ol>
         </div>
     </div>
     <div [hidden]="mode !== 'byBook'" *ngFor="let bookId of obj.keys(readingReportByBook)" class="row mb-2">
         <div class="col">
-            <button (click)="toggle(bookId)" class="btn font-weight-bolder"><i
+            <button (click)="toggle(bookId)" class="btn font-weight-bolder text-left"><i
                     [ngClass]="{'fa-chevron-right': expanded[bookId] === false, 'fa-chevron-down': expanded[bookId] === true}"
-                    class="fa fa-lg align-text-center mr-2"></i> <u>{{booksById[bookId]}}</u> ({{countByBookId[bookId]}})
+                    class="fa fa-lg mr-2"></i> <u>{{booksById[bookId]}}</u> ({{countByBookId[bookId]}})
             </button>
             <ol *ngIf="expanded[bookId] === true">
-                <li *ngFor="let readingData of readingReportByBook[bookId]">
-                    <span class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.pagesRead}} page(s) read</span>
+                <li *ngFor="let readingData of sortByDateDesc(readingReportByBook[bookId])">
+                    <span class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
                 </li>
             </ol>
         </div>
