@@ -26,6 +26,7 @@ export class MainComponent implements OnInit {
     shelves = Constants.shelfs;
     positions = Constants.positions;
     bookTypes = Constants.bookTypes;
+    bookTypeLabelsByBookType: {[code: string]: string} = {};
     editingBook: Book = null;
     showAddBook = false;
     newBook: Book = new Book(null, null, null, null, -1, null, "N/A", "N", "N");
@@ -43,6 +44,7 @@ export class MainComponent implements OnInit {
 
     ngOnInit(): void {
         this.showInitializing = true;
+        this.bookTypes.forEach(bt => this.bookTypeLabelsByBookType[bt.value] = bt.label);
         let readingDataObs = this.bookService.getReadingData();
         let booksObs = this.bookService.getBooks();
         forkJoin([booksObs, readingDataObs]).subscribe(
@@ -201,7 +203,11 @@ export class MainComponent implements OnInit {
     }
 
     showNewBookForm() {
-        this.newBook = new Book(null, null, null, null, -1, null, "REGULAR", "N", "N");
+        if (StringUtils.isEmpty(this.filterCategory)) {
+            this.newBook = new Book(null, null, null, null, -1, null, "REGULAR", "N", "N");
+        } else {
+            this.newBook = new Book(null, null, null, null, -1, null, this.filterCategory, "N", "N");
+        }
         this.showAddBook = true;
         setTimeout(() => {
             this.titleInput.nativeElement.focus();
@@ -263,10 +269,11 @@ export class MainComponent implements OnInit {
     }
 
     startReading(book: Book) {
-        this.modalHelperService.confirm({message: "Start reading session for this book?"}).result.then(() => {
-            console.log("User chose to start reading this book at " + new Date());
+        let sessionType = ['AUDIBLE', 'CHRSTNAUDIO', 'MP3'].includes(book.type_of_book) ? "listening" : "reading";
+        this.modalHelperService.confirm({message: "Start " + sessionType + " session for this book?"}).result.then(() => {
+            console.log("User chose to start " + sessionType + " this book at " + new Date());
             this.serverCall = true;
-            this.serverCallMessage = "Starting reading session...";
+            this.serverCallMessage = "Starting " + sessionType + " session...";
             let param: ReadingData = <ReadingData>{
                 bookId: book.id,
                 readStartDate: this.bookService.getCurrentDateTime(),
@@ -286,29 +293,30 @@ export class MainComponent implements OnInit {
                         this.historyRecords[book.id] = [param];
                     }
                 } else {
-                    this.modalHelperService.alert({message: "Error starting reading session: " + response, header: "Error!"}).result.then(() => {});
+                    this.modalHelperService.alert({message: "Error starting " + sessionType + " session: " + response, header: "Error!"}).result.then(() => {});
                 }
                 this.serverCall = false;
                 this.serverCallMessage = null;
             },
                 () => {
-                    this.modalHelperService.alert({message: "Error starting reading session...", header: "Error!"}).result.then(() => {});
+                    this.modalHelperService.alert({message: "Error starting " + sessionType + " session...", header: "Error!"}).result.then(() => {});
                     this.serverCall = false;
                     this.serverCallMessage = null;
                 });
-        }, () => console.log("User chose not to start reading..."));
+        }, () => console.log("User chose not to start " + sessionType + "..."));
     }
 
     stopReading(book: Book) {
         // I should be able to find a record in history records for this reading session where start date/time is
         // populated and end date/time is not populated.  I need to get the start date/time from this history record
         // so that I can close out the correct record on the server side.
+        let sessionType = ['AUDIBLE', 'CHRSTNAUDIO', 'MP3'].includes(book.type_of_book) ? "listening" : "reading";
         let histRecordToBeStopped: ReadingData = this.historyRecords[book.id].find(histRec => histRec.readStartDate && !histRec.readEndDate);
         let sessionStartDateTime: string = histRecordToBeStopped.readStartDate;
         this.modalHelperService.openStopReading(book, sessionStartDateTime).result.then((readingData: ReadingData) => {
-                console.log("User chose to end reading this book at " + new Date());
+                console.log("User chose to end " + sessionType + " this book at " + new Date());
                 this.serverCall = true;
-                this.serverCallMessage = "Starting reading session...";
+                this.serverCallMessage = "Stopping " + sessionType + " session...";
                 let param: ReadingData = <ReadingData>{
                     bookId: book.id,
                     pagesRead: readingData.pagesRead,
@@ -323,19 +331,20 @@ export class MainComponent implements OnInit {
                         histRecordToBeStopped.readEndDate = param.readEndDate;
                         histRecordToBeStopped.pagesRead = param.pagesRead;
                         histRecordToBeStopped.lastReadPage = param.lastReadPage;
+                        histRecordToBeStopped.percentageRead = param.percentageRead;
                     } else {
-                        this.modalHelperService.alert({message: "Error ending reading session: " + response, header: "Error!"}).result.then(() => {});
+                        this.modalHelperService.alert({message: "Error ending " + sessionType + " session: " + response, header: "Error!"}).result.then(() => {});
                     }
                     this.serverCall = false;
                     this.serverCallMessage = null;
                 },
                     () => {
-                        this.modalHelperService.alert({message: "Error ending reading session...", header: "Error!"}).result.then(() => {});
+                        this.modalHelperService.alert({message: "Error ending " + sessionType + " session...", header: "Error!"}).result.then(() => {});
                         this.serverCall = false;
                         this.serverCallMessage = null;
                     });
             },
-            () => console.log("User chose not to end reading session..."));
+            () => console.log("User chose not to end " + sessionType + " session..."));
     }
 
     sortRecsForBook(historyRecords: ReadingData[]) {

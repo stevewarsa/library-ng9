@@ -17,6 +17,7 @@ export class ReadingReportComponent implements OnInit {
   obj = Object;
   countByDate: { [dateAsString: string]: number } = {};
   booksById: {[bookId: number]: string} = {};
+  booksObjById: {[bookId: number]: Book} = {};
   countByBookId: { [bookId: string]: number } = {};
 
   constructor(private bookService: BookService) { }
@@ -31,6 +32,7 @@ export class ReadingReportComponent implements OnInit {
           console.log('MainComponent.ngOnInit - bookService.getBooks().subscribe()...');
           response[0].forEach((book: Book) => {
             this.booksById[book.id] = book.title;
+            this.booksObjById[book.id] = book;
           });
           response[1].forEach(readingData => {
             if (this.readingReportByBook.hasOwnProperty(readingData.bookId)) {

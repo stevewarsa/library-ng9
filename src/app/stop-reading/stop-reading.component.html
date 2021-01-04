@@ -1,20 +1,20 @@
 <div class="modal-header">
-    <h4 class="modal-title"><span class="mr-1 fa fa-info-circle"></span>Stop Reading</h4>
+    <h4 class="modal-title"><span class="mr-1 fa fa-info-circle"></span>Stop {{ audioMode ? "Listening" : "Reading" }}</h4>
     <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <div class="modal-body">
-    <p class="lead">Stop reading session for book '{{book.title}}'?</p>
-    <h6>(reading session started {{sessionStartDateTime}})</h6>
+    <p class="lead">Stop {{ audioMode ? "listening" : "reading" }} session for book '{{book.title}}'?</p>
+    <h6>({{ audioMode ? "listening" : "reading" }} session started {{sessionStartDateTime}})</h6>
     <div class="row">
-        <div *ngIf="!kindleMode" class="col">
+        <div *ngIf="!kindleMode && !audioMode" class="col">
             <input [(ngModel)]="pagesRead" type="text" class="form-control" placeholder="Pages Read">
         </div>
-        <div *ngIf="!kindleMode" class="col">
+        <div *ngIf="!kindleMode && !audioMode" class="col">
             <input [(ngModel)]="endPage" type="text" class="form-control" placeholder="End Page">
         </div>
-        <div *ngIf="kindleMode" class="col">
+        <div *ngIf="kindleMode && !audioMode" class="col">
             <input [(ngModel)]="percentageComplete" type="text" class="form-control" placeholder="Percentage Complete">
         </div>
     </div>

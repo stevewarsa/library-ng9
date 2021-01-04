@@ -9,6 +9,7 @@ import {ReadingData} from "src/app/reading-data";
 export class StopReadingComponent implements OnInit {
   book: Book;
   kindleMode = false;
+  audioMode = false;
   pagesRead: number = null;
   endPage: number = null;
   percentageComplete: number = null;
@@ -18,6 +19,7 @@ export class StopReadingComponent implements OnInit {
 
   ngOnInit(): void {
     this.kindleMode = this.book.type_of_book === 'KINDLE';
+    this.audioMode = ['AUDIBLE', 'CHRSTNAUDIO', 'MP3'].includes(this.book.type_of_book);
   }
 
   doStop() {

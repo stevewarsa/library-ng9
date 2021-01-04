@@ -133,27 +133,27 @@
                 <textarea class="form-control" *ngIf="editing[book.id]" type="text" [(ngModel)]="editingBook.author">
                 </textarea>
             </p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Location: </strong>
+            <p *ngIf="book.type_of_book === 'REGULAR'" class="card-text"><strong>Location: </strong>
                 <span *ngIf="!editing[book.id]">{{book.bookLocation}}</span>
                 <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.bookLocation">
                     <option value="N/A"></option>
                     <option *ngFor="let location of locations" [ngValue]="location.value">{{location.label}}</option>
                 </select>
             </p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Shelf/Row: </strong>
+            <p *ngIf="book.type_of_book === 'REGULAR'" class="card-text"><strong>Shelf/Row: </strong>
                 <span *ngIf="!editing[book.id]">{{book.shelf}}</span>
                 <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.shelf">
                     <option *ngFor="let shelf of shelves" [ngValue]="shelf.value">{{shelf.label}}</option>
                 </select>
             </p>
-            <p *ngIf="book.type_of_book !== 'KINDLE'" class="card-text"><strong>Position in Row: </strong>
+            <p *ngIf="book.type_of_book === 'REGULAR'" class="card-text"><strong>Position in Row: </strong>
                 <span *ngIf="!editing[book.id]">{{book.positionInRow}}</span>
                 <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.positionInRow">
                     <option *ngFor="let position of positions" [ngValue]="position.value">{{position.label}}</option>
                 </select>
             </p>
             <p class="card-text"><strong>Book Type: </strong>
-                <span *ngIf="!editing[book.id]">{{book.type_of_book}}</span>
+                <span *ngIf="!editing[book.id]">{{bookTypeLabelsByBookType[book.type_of_book]}}</span>
                 <select *ngIf="editing[book.id]" [(ngModel)]="editingBook.type_of_book">
                     <option *ngFor="let bookType of bookTypes" [ngValue]="bookType.value">{{bookType.label}}</option>
                 </select>
@@ -176,8 +176,9 @@
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row">
                 <div class="col font-weight-bold"><u>Date</u></div>
                 <div class="col-5 font-weight-bold"><u>Time</u></div>
-                <div class="col font-weight-bold"><u>Pgs</u></div>
-                <div class="col font-weight-bold"><u>L.Pg</u></div>
+                <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col font-weight-bold"><u>Pgs</u></div>
+                <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col font-weight-bold"><u>L.Pg</u></div>
+                <div *ngIf="book.type_of_book === 'KINDLE'" class="col font-weight-bold"><u>% Compl.</u></div>
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row" *ngFor="let histRec of sortRecsForBook(historyRecords[book.id])">
                 <div class="col">
@@ -186,8 +187,9 @@
                 <div class="col-5">
                     {{getTimeRange(histRec)}}
                 </div>
-                <div class="col">{{histRec.pagesRead}}</div>
-                <div class="col">{{histRec.lastReadPage}}</div>
+                <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col">{{histRec.pagesRead}}</div>
+                <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col">{{histRec.lastReadPage}}</div>
+                <div *ngIf="book.type_of_book === 'KINDLE'" class="col">{{histRec.percentageRead}}</div>
             </div>
         </div>
     </div>

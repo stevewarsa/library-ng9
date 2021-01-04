@@ -37,7 +37,9 @@
             </button>
             <ol *ngIf="expanded[dateStr] === true">
                 <li *ngFor="let readingData of sortByBookName(readingReportByDate[dateStr])">
-                    <span class="font-weight-bold">{{booksById[readingData.bookId]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
+                    <span [hidden]="!['REGULAR', 'PDF'].includes(booksObjById[readingData.bookId].type_of_book)" class="font-weight-bold">{{booksById[readingData.bookId]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
+                    <span [hidden]="booksObjById[readingData.bookId].type_of_book !== 'KINDLE'" class="font-weight-bold">{{booksById[readingData.bookId]}} - {{readingData.percentageRead}}% complete</span>
+                    <span [hidden]="!['MP3','AUDIBLE','CHRSTNAUDIO'].includes(booksObjById[readingData.bookId].type_of_book)" class="font-weight-bold">{{booksById[readingData.bookId]}}</span>
                 </li>
             </ol>
         </div>
@@ -50,7 +52,9 @@
             </button>
             <ol *ngIf="expanded[bookId] === true">
                 <li *ngFor="let readingData of sortByDateDesc(readingReportByBook[bookId])">
-                    <span class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
+                    <span [hidden]="!['REGULAR', 'PDF'].includes(booksObjById[bookId].type_of_book)" class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.pagesRead}} page(s) read, ended on page {{readingData.lastReadPage}}</span>
+                    <span [hidden]="booksObjById[bookId].type_of_book !== 'KINDLE'" class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}} - {{readingData.percentageRead}}% complete</span>
+                    <span [hidden]="!['MP3','AUDIBLE','CHRSTNAUDIO'].includes(booksObjById[bookId].type_of_book)" class="font-weight-bold">{{readingData.readStartDate.split(' ')[0]}}</span>
                 </li>
             </ol>
         </div>
