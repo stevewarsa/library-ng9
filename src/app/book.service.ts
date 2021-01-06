@@ -88,7 +88,7 @@ export class BookService {
     }));
   }
 
-  sortArrayByDate(array: any[], field: string, desc:boolean=false, dateFormat: string="M/D/YYYY HH:mm:ss'") {
+  sortArrayByDate(array: any[], field: string, desc:boolean=false, dateFormat: string="M/D/YYYY HH:mm:ss") {
     return array.sort((a, b) => {
       let dateStr1 = field ? a[field] : a;
       let dateStr2 = field ? b[field] : b;

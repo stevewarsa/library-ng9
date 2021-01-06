@@ -3,6 +3,8 @@ import {ReadingData} from "src/app/reading-data";
 import {BookService} from "src/app/book.service";
 import {forkJoin} from "rxjs";
 import {Book} from "src/app/book";
+import {StringUtils} from "src/app/string.utils";
+import * as moment from "moment";
 
 @Component({
   templateUrl: './reading-report.component.html'
@@ -101,5 +103,21 @@ export class ReadingReportComponent implements OnInit {
 
   sortByDatesOnly(dates: string[]) {
     return this.bookService.sortArrayByDate(dates, null, true, "M/D/YYYY");
+  }
+
+  getReadingDuration(record: ReadingData): string {
+    if (!record) {
+      return "";
+    }
+    if (!['MP3','AUDIBLE','CHRSTNAUDIO'].includes(this.booksObjById[record.bookId].type_of_book)) {
+      return "";
+    }
+    if (StringUtils.isEmpty(record.readStartDate) && StringUtils.isEmpty(record.readEndDate)) {
+      return "";
+    }
+    let startDate = moment(record.readStartDate, "M/D/YYYY HH:mm:ss");
+    let endDate = moment(record.readEndDate, "M/D/YYYY HH:mm:ss");
+    let diffMinutes = endDate.diff(startDate, 'minutes');
+    return " - " + diffMinutes + " minutes";
   }
 }
