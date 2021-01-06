@@ -86,7 +86,7 @@ export class ReadingReportComponent implements OnInit {
   }
 
   toggle(category: string) {
-    this.expanded[category] = true;
+    this.expanded[category] = !this.expanded[category];
   }
 
   sortByDateDesc(records: ReadingData[]): ReadingData[] {
