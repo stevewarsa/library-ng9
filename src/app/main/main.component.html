@@ -174,17 +174,23 @@
                 <div class="col"><button (click)="bookHistoryExpanded[book.id] = !bookHistoryExpanded[book.id]" class="btn font-weight-bolder"><i [ngClass]="{'fa-chevron-right': bookHistoryExpanded[book.id] === false, 'fa-chevron-down': bookHistoryExpanded[book.id] === true}" class="fa fa-lg align-text-center mr-2"></i> <span class="font-weight-bold mr-3">Reading History:</span></button></div>
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row">
+                <div class="col-1 font-weight-bold"><u>#</u></div>
                 <div class="col font-weight-bold"><u>Date</u></div>
-                <div class="col-5 font-weight-bold"><u>Time</u></div>
+                <div class="col-3 font-weight-bold"><u>Time</u></div>
                 <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col font-weight-bold"><u>Pgs</u></div>
                 <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col font-weight-bold"><u>L.Pg</u></div>
                 <div *ngIf="book.type_of_book === 'KINDLE'" class="col font-weight-bold"><u>% Compl.</u></div>
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row" *ngFor="let histRec of sortRecsForBook(historyRecords[book.id])">
+                <div class="col-1">
+                    <button title="Delete Reading Session" (click)="doDelete(editingBook)" type="button" class="btn">
+                        <i class="fa fa-remove text-danger"></i>
+                    </button>
+                </div>
                 <div class="col">
                     {{getDateOnlyString(histRec.readStartDate)}}
                 </div>
-                <div class="col-5">
+                <div class="col-3">
                     {{getTimeRange(histRec)}}
                 </div>
                 <div *ngIf="['REGULAR', 'PDF'].includes(book.type_of_book)" class="col">{{histRec.pagesRead}}</div>

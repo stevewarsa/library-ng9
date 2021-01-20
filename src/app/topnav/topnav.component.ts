@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {NavigationStart, Router} from "@angular/router";
 
 @Component({
   selector: 'lb-topnav',
@@ -11,7 +12,14 @@ export class TopnavComponent implements OnInit {
   isCollapsed = true;
   currentRoute: string = null;
 
-  constructor() { }
+  constructor(private route: Router) {
+    route.events.subscribe(val => {
+      if (val instanceof NavigationStart) {
+        console.log(val.url);
+        this.currentRoute = val.url;
+      }
+    });
+  }
 
   ngOnInit(): void {
     if (window.screen.width < 500) { // 768px portrait

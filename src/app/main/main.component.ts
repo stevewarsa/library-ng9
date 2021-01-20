@@ -19,7 +19,7 @@ export class MainComponent implements OnInit {
     filterLocation: string = null;
     filterBook: string = null;
     filterShelf: number = -1;
-    filterInReadingList = false;
+    filterInReadingList = true;
     randomFiltered = false;
     editing: {[bookId: number]: boolean} = {};
     locations = Constants.bookLocations;
@@ -52,7 +52,9 @@ export class MainComponent implements OnInit {
                 console.log('MainComponent.ngOnInit - bookService.getBooks().subscribe()...');
                 this.books = response[0];
                 this.books.forEach(book => {
-                    this.filteredBooks.push(book);
+                    if ((book.in_reading_list === 'Y') === this.filterInReadingList) {
+                        this.filteredBooks.push(book);
+                    }
                     this.editing[book.id] = false;
                     this.readingBookNow[book.id] = false;
                     this.bookHistoryExpanded[book.id] = false;
@@ -366,12 +368,13 @@ export class MainComponent implements OnInit {
     }
 
     getTimeRange(histRecord: ReadingData): string {
-        const startDateTime = moment(histRecord.readStartDate, "M/D/YYYY HH:mm:ss");
+        let startDateTime = moment(histRecord.readStartDate, "M/D/YYYY HH:mm:ss");
         if (StringUtils.isEmpty(histRecord.readEndDate)) {
             return "Started at: " + startDateTime.format("H:mm:ss");
         } else {
-            const endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
-            return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss");
+            let endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
+            let minutesRead = (endDateTime.diff(startDateTime) / 1000) / 60;
+            return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss") + " (" + minutesRead.toFixed(1) + " minutes)";
         }
     }
 }

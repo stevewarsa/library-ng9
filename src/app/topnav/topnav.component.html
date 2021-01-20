@@ -5,7 +5,7 @@
     </button>
     <div class="navbar-collapse collapse justify-content-center" id="collapsingNavbar" [ngbCollapse]="isCollapsed">
         <ul class="navbar-nav mx-auto">
-            <li [hidden]="currentRoute === '/' || currentRoute === ''" class="nav-item">
+            <li [hidden]="currentRoute === '/' || currentRoute === '' || currentRoute === 'main' || currentRoute === '/main'" class="nav-item">
                 <a class="nav-link" (click)="toggleExpanded()" [routerLink]="['main']"><i class="mr-2 fa fa-film"></i> Main</a>
             </li>
             <li [hidden]="currentRoute === '/readingReport' || currentRoute === 'readingReport'" class="nav-item">

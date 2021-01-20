@@ -36,6 +36,11 @@ export class BookService {
     return this.httpService.post(this._url + 'delete_book.php', {bookId: bookId});
   }
 
+  deleteReadingSession(readingData: ReadingData):Observable<any> {
+    console.log('BookService.deleteReadingSession - calling server to delete reading session...');
+    return this.httpService.post(this._url + 'delete_reading_session.php', readingData);
+  }
+
   announceNewBook(book:Book) {
     console.log('BookService.announceNewBook - announcing new book...');
     this.bookAnnouncedSource.next(book);
