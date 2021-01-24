@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ask Me a Question</title>
+    <script>
+        var entries = [];
+        function addEntry() {
+            var elem = document.getElementById('ta');
+            entries.unshift({dt: new Date().toString(), val: elem.value});
+            console.log("Here are the entries:");
+            console.log(entries);
+            var historyDiv = document.getElementById('historyDiv');
+            var html = "";
+            for (var entry of entries) {
+                html += "<br>Date: " + entry.dt + ", action: " + entry.val;
+            }
+            historyDiv.innerHTML = html;
+            elem.value = '';
+            document.getElementById('ta').focus();
+        }
+
+    </script>
+</head>
+<body>
+<h1>Every 10 Minutes a Field will Show Up Asking You What You're Doing</h1>
+<div id="contentDiv">
+    <h3>What are you doing?</h3>
+    <textarea autofocus name="ta" id="ta" cols="50" rows="10"></textarea><br>
+    <button type="button" onclick="addEntry()">Submit</button>
+</div>
+<div id="historyDiv">
+</div>
+</body>
+</html>
