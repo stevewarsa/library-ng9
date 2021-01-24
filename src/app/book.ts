@@ -1,5 +1,6 @@
 export class Book {
     public id: number;
+    public currentlyReading: boolean = false;
     constructor(
         public title: string, 
         public subtitle: string, 

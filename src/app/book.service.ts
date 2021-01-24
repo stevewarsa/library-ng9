@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Book } from './book';
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {ReadingData} from "src/app/reading-data";
 import * as moment from 'moment';
 
@@ -11,8 +11,8 @@ import * as moment from 'moment';
 export class BookService {
   private _url:string = "http://ps11911.com/library/php/";
   // Observable string sources
-  private bookAnnouncedSource = new Subject<Book>();
-  bookAnnounced$:Observable<Book> = this.bookAnnouncedSource.asObservable();
+  // private bookAnnouncedSource = new Subject<Book>();
+  // bookAnnounced$:Observable<Book> = this.bookAnnouncedSource.asObservable();
 
   constructor(private httpService: HttpClient) {
   }
@@ -41,10 +41,10 @@ export class BookService {
     return this.httpService.post(this._url + 'delete_reading_session.php', readingData);
   }
 
-  announceNewBook(book:Book) {
-    console.log('BookService.announceNewBook - announcing new book...');
-    this.bookAnnouncedSource.next(book);
-  }
+  // announceNewBook(book:Book) {
+  //   console.log('BookService.announceNewBook - announcing new book...');
+  //   this.bookAnnouncedSource.next(book);
+  // }
 
   getBooks():Observable<any> {
     console.log('BookService.getBooks - calling ' + this._url + 'get_books.php...');
@@ -56,7 +56,7 @@ export class BookService {
     return this.httpService.get<ReadingData[]>(this._url + 'get_reading_data.php');
   }
 
-  filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string, filterShelf: number, filterInReadingList: boolean): Observable<Book[]> {
+  filterBookList(books: Book[], textFilter: string, bookTypeFilter: string, bookLocationFilter: string, filterShelf: number, filterInReadingList: boolean, filterLiveReadingSession: boolean): Observable<Book[]> {
     return of(books.filter(book => {
       let matches = false;
       if (textFilter !== null && textFilter.trim() !== "") {
@@ -74,6 +74,11 @@ export class BookService {
       if (matches) {
         if (filterInReadingList === true) {
           matches = book.in_reading_list === 'Y';
+        }
+      }
+      if (matches) {
+        if (filterLiveReadingSession === true) {
+          matches = book.currentlyReading === true;
         }
       }
       // run the next set of filters
@@ -104,25 +109,25 @@ export class BookService {
 
   }
 
-  getReadingList(): Observable<Book[]> {
-    console.log('BookService.getReadingList - calling ' + this._url + 'get_reading_list.php...');
-    return this.httpService.get<Book[]>(this._url + 'get_reading_list.php');
-  }
+  // getReadingList(): Observable<Book[]> {
+  //   console.log('BookService.getReadingList - calling ' + this._url + 'get_reading_list.php...');
+  //   return this.httpService.get<Book[]>(this._url + 'get_reading_list.php');
+  // }
 
-  getRandomBook(bookType: string):Observable<Book> {
-    console.log('BookService.getRandomBook - calling ' + this._url + 'get_random_book.php...');
-    return this.httpService.post<Book>(this._url + 'get_random_book.php', bookType);
-  }
+  // getRandomBook(bookType: string):Observable<Book> {
+  //   console.log('BookService.getRandomBook - calling ' + this._url + 'get_random_book.php...');
+  //   return this.httpService.post<Book>(this._url + 'get_random_book.php', bookType);
+  // }
 
-  searchBooks(searchText:string):Observable<any> {
-    console.log('BookService.getBooks - calling ' + this._url + 'get_books.php...');
-    return this.httpService.get(this._url + 'search_books.php?searchText=' + searchText);
-  }
+  // searchBooks(searchText:string):Observable<any> {
+  //   console.log('BookService.getBooks - calling ' + this._url + 'get_books.php...');
+  //   return this.httpService.get(this._url + 'search_books.php?searchText=' + searchText);
+  // }
 
-  getAuthors():Observable<any> {
-    console.log('BookService.getAuthors - calling ' + this._url + 'get_authors.php...');
-    return this.httpService.get(this._url + 'get_authors.php');
-  }
+  // getAuthors():Observable<any> {
+  //   console.log('BookService.getAuthors - calling ' + this._url + 'get_authors.php...');
+  //   return this.httpService.get(this._url + 'get_authors.php');
+  // }
 
   addToReadingList(bookId: number):Observable<any> {
     console.log('BookService.addToReadingList - calling ' + this._url + 'add_to_reading_list.php...');

@@ -96,7 +96,11 @@
         <div class="col">
             <div class="form-check ml-1">
                 <input [ngModel]="filterInReadingList" type="checkbox" id="inReadingList" name="inReadingList" class="form-check-input" (change)="onFilterInReadingList($event)">
-                <label class="form-check-label mr-2 font-weight-bold" for="inReadingList">In Reading List:</label>
+                <label class="form-check-label mr-2 font-weight-bold" for="inReadingList">In Reading List</label>
+            </div>
+            <div class="form-check ml-1">
+                <input [ngModel]="filterLiveReadingSession" type="checkbox" id="liveReadingSession" name="liveReadingSession" class="form-check-input" (change)="onFilterInLiveReadingSession($event)">
+                <label class="form-check-label mr-2 font-weight-bold" for="inReadingList">Reading Now</label>
             </div>
         </div>
         <div class="col">
@@ -183,7 +187,7 @@
             </div>
             <div [hidden]="bookHistoryExpanded[book.id] === false || !historyRecords.hasOwnProperty(book.id)" class="row" *ngFor="let histRec of sortRecsForBook(historyRecords[book.id])">
                 <div class="col-1">
-                    <button title="Delete Reading Session" (click)="doDelete(editingBook)" type="button" class="btn">
+                    <button title="Delete Reading Session" (click)="doDeleteHistoryEntry(histRec)" type="button" class="btn p-0">
                         <i class="fa fa-remove text-danger"></i>
                     </button>
                 </div>

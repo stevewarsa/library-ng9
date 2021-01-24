@@ -20,6 +20,7 @@ export class MainComponent implements OnInit {
     filterBook: string = null;
     filterShelf: number = -1;
     filterInReadingList = true;
+    filterLiveReadingSession = false;
     randomFiltered = false;
     editing: {[bookId: number]: boolean} = {};
     locations = Constants.bookLocations;
@@ -69,6 +70,7 @@ export class MainComponent implements OnInit {
                         // this means that there is a history record for which no end date/time is set
                         // so it is still in progress - so set the flag for this book
                         this.readingBookNow[histRec.bookId] = true;
+                        this.books.find(bk => bk.id === histRec.bookId).currentlyReading = true;
                     }
                 });
                 this.showInitializing = false;
@@ -78,7 +80,7 @@ export class MainComponent implements OnInit {
 
     private doFilter(showSpinner: boolean = true) {
         this.filtering = showSpinner;
-        this.bookService.filterBookList(this.books, this.filterBook, this.filterCategory, this.filterLocation, this.filterShelf, this.filterInReadingList).subscribe(filteredBooks => {
+        this.bookService.filterBookList(this.books, this.filterBook, this.filterCategory, this.filterLocation, this.filterShelf, this.filterInReadingList, this.filterLiveReadingSession).subscribe(filteredBooks => {
             setTimeout(() => {
                 this.filteredBooks = filteredBooks;
                 this.filtering = false;
@@ -110,6 +112,11 @@ export class MainComponent implements OnInit {
 
     onFilterInReadingList(evt: any) {
         this.filterInReadingList = evt.target.checked;
+        this.doFilter();
+    }
+
+    onFilterInLiveReadingSession(evt: any) {
+        this.filterLiveReadingSession = evt.target.checked;
         this.doFilter();
     }
 
@@ -175,12 +182,28 @@ export class MainComponent implements OnInit {
         console.log("Deleting book:");
         console.log(deletedBook);
         this.modalHelperService.confirm({message: "Delete this book?"}).result.then(() => {
+                this.serverCall = true;
+                this.serverCallMessage = "Deleting book...";
+                this.bookService.deleteBook(deletedBook.id).subscribe(response => {
+                    if (response === "success") {
+                        this.books = this.books.filter(bk => bk.id !== deletedBook.id);
+                    } else {
+                        this.modalHelperService.alert({message: "Error with deleting: " + response, header: "Error!"}).result.then(() => {});
+                    }
+                });
+            },
+            () => {console.log("User chose not to delete book...")});
+    }
+
+    doDeleteHistoryEntry(readingData: ReadingData) {
+        console.log("Deleting reading session:");
+        console.log(readingData);
+        this.modalHelperService.confirm({message: "Delete this reading session?"}).result.then(() => {
             this.serverCall = true;
-            this.serverCallMessage = "Deleting book...";
-            this.bookService.deleteBook(deletedBook.id).subscribe(response => {
+            this.serverCallMessage = "Deleting reading session...";
+            this.bookService.deleteReadingSession(readingData).subscribe(response => {
                 if (response === "success") {
-                    this.books = this.books.filter(bk => bk.id !== deletedBook.id);
-                    this.doFilter(false);
+                    this.historyRecords[readingData.bookId] = this.historyRecords[readingData.bookId].filter(rs => rs.readStartDate !== readingData.readStartDate);
                 } else {
                     this.modalHelperService.alert({message: "Error with deleting: " + response, header: "Error!"}).result.then(() => {});
                 }
@@ -190,10 +213,9 @@ export class MainComponent implements OnInit {
         },
             () => {
                 // user answered no
-                console.log("User chose not to save data...");
+                console.log("User chose not to delete history entry...");
             });
     }
-
     revertBookChanges(book: Book) {
         this.editing[book.id] = false;
     }
@@ -294,6 +316,10 @@ export class MainComponent implements OnInit {
                     } else {
                         this.historyRecords[book.id] = [param];
                     }
+                    book.currentlyReading = true;
+                    this.filterLiveReadingSession = true;
+                    this.doFilter();
+
                 } else {
                     this.modalHelperService.alert({message: "Error starting " + sessionType + " session: " + response, header: "Error!"}).result.then(() => {});
                 }
@@ -334,6 +360,7 @@ export class MainComponent implements OnInit {
                         histRecordToBeStopped.pagesRead = param.pagesRead;
                         histRecordToBeStopped.lastReadPage = param.lastReadPage;
                         histRecordToBeStopped.percentageRead = param.percentageRead;
+                        book.currentlyReading = false;
                     } else {
                         this.modalHelperService.alert({message: "Error ending " + sessionType + " session: " + response, header: "Error!"}).result.then(() => {});
                     }
@@ -374,7 +401,7 @@ export class MainComponent implements OnInit {
         } else {
             let endDateTime = moment(histRecord.readEndDate, "M/D/YYYY HH:mm:ss");
             let minutesRead = (endDateTime.diff(startDateTime) / 1000) / 60;
-            return startDateTime.format("H:mm:ss") + "-" + endDateTime.format("H:mm:ss") + " (" + minutesRead.toFixed(1) + " minutes)";
+            return startDateTime.format("H:mm") + "-" + endDateTime.format("H:mm") + " (" + minutesRead.toFixed(1) + " min)";
         }
     }
 }
