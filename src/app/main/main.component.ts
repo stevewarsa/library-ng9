@@ -317,6 +317,8 @@ export class MainComponent implements OnInit {
                         this.historyRecords[book.id] = [param];
                     }
                     book.currentlyReading = true;
+                    // on the server call it sets in reading list to Y, so set it here on the client side
+                    book.in_reading_list = "Y";
                     this.filterLiveReadingSession = true;
                     this.doFilter();
 
@@ -341,7 +343,7 @@ export class MainComponent implements OnInit {
         let sessionType = ['AUDIBLE', 'CHRSTNAUDIO', 'MP3'].includes(book.type_of_book) ? "listening" : "reading";
         let histRecordToBeStopped: ReadingData = this.historyRecords[book.id].find(histRec => histRec.readStartDate && !histRec.readEndDate);
         let sessionStartDateTime: string = histRecordToBeStopped.readStartDate;
-        this.modalHelperService.openStopReading(book, sessionStartDateTime).result.then((readingData: ReadingData) => {
+        this.modalHelperService.openStopReading(book, sessionStartDateTime, this.historyRecords[book.id]).result.then((readingData: ReadingData) => {
                 console.log("User chose to end " + sessionType + " this book at " + new Date());
                 this.serverCall = true;
                 this.serverCallMessage = "Stopping " + sessionType + " session...";

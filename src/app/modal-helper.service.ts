@@ -5,6 +5,7 @@ import { ConfirmComponent } from './confirm/confirm.component';
 import {AlertComponent} from "src/app/alert/alert.component";
 import {StopReadingComponent} from "src/app/stop-reading/stop-reading.component";
 import {Book} from "src/app/book";
+import {ReadingData} from "src/app/reading-data";
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +33,13 @@ export class ModalHelperService {
     return modalRef;
   }
 
-  openStopReading(book: Book, sessionStartDateTime: string): NgbModalRef {
+  openStopReading(book: Book, sessionStartDateTime: string, historyForBook: ReadingData[]): NgbModalRef {
     const modalRef: NgbModalRef = this.openModal(StopReadingComponent);
     const stopReadingComp = modalRef.componentInstance as StopReadingComponent;
     stopReadingComp.book = book;
+    if (historyForBook && historyForBook.length) {
+      stopReadingComp.historyForBook = historyForBook;
+    }
     stopReadingComp.sessionStartDateTime = sessionStartDateTime;
     return modalRef;
   }

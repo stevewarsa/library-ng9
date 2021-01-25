@@ -12,7 +12,7 @@
             <input [(ngModel)]="pagesRead" type="text" class="form-control" placeholder="Pages Read">
         </div>
         <div *ngIf="!kindleMode && !audioMode" class="col">
-            <input [(ngModel)]="endPage" type="text" class="form-control" placeholder="End Page">
+            <input [(ngModel)]="endPage" type="text" class="form-control" placeholder="End Page" (change)="updatePagesRead($event)">
         </div>
         <div *ngIf="kindleMode && !audioMode" class="col">
             <input [(ngModel)]="percentageComplete" type="text" class="form-control" placeholder="Percentage Complete">

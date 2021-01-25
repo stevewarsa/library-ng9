@@ -121,8 +121,8 @@
             <div class="btn-group" role="group" aria-label="Book Toolbar">
                 <button *ngIf="!editing[book.id]" title="Edit Book" (click)="editBook(book)" type="button" class="btn"><i class="fa fa-edit fa-lg"></i></button>
                 <button *ngIf="!editing[book.id] && book.in_reading_list !== 'Y'" title="Add to Reading List" (click)="addToReadingList(book)" type="button" class="btn"><i class="fa fa-bookmark-o fa-lg"></i></button>
-                <button *ngIf="!editing[book.id] && book.in_reading_list === 'Y' && !readingBookNow[book.id]" title="Start Reading" (click)="startReading(book)" type="button" class="btn"><i class="fa fa-play fa-lg text-success"></i></button>
-                <button *ngIf="!editing[book.id] && book.in_reading_list === 'Y' && readingBookNow[book.id]" title="Stop Reading" (click)="stopReading(book)" type="button" class="btn"><i class="fa fa-stop fa-lg text-danger"></i></button>
+                <button *ngIf="!editing[book.id] && !readingBookNow[book.id]" title="Start Reading" (click)="startReading(book)" type="button" class="btn"><i class="fa fa-play fa-lg text-success"></i></button>
+                <button *ngIf="!editing[book.id] && readingBookNow[book.id]" title="Stop Reading" (click)="stopReading(book)" type="button" class="btn"><i class="fa fa-stop fa-lg text-danger"></i></button>
                 <button *ngIf="editing[book.id]" title="Save Changes" (click)="doSave(editingBook)" type="button" class="btn"><i class="fa fa-save fa-lg"></i></button>
                 <button *ngIf="editing[book.id]" title="Delete Book" (click)="doDelete(editingBook)" type="button" class="btn"><i class="fa fa-remove fa-lg"></i></button>
                 <button *ngIf="editing[book.id]" title="Revert Changes" (click)="revertBookChanges(editingBook)" type="button" class="btn"><i class="fa fa-mail-reply-all fa-lg"></i></button>

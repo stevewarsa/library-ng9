@@ -18,9 +18,12 @@ $pagesRead = $readingData->pagesRead;
 $lastReadPage = $readingData->lastReadPage;
 $percentageRead = $readingData->percentageRead;
 $readStartDate = $readingData->readStartDate;
+$statement = $db->prepare("update book set in_reading_list = 'Y' where id = :bookId");
+$statement->bindValue(':bookId', $bookId);
+$statement->execute();
+$statement->close();
 $statement = $db->prepare("insert into reading_list(book_id, pages_read, last_page_read, percentage_read, read_start_date_time, record_date_time) 
 values(:bookId, :pages_read, :last_page_read, :percentage_read, :read_start_date_time, :record_date_time)");
-//$statement = $db->prepare("update reading_list set in_reading_list = 'Y' where id = :bookId");
 $statement->bindValue(':bookId', $bookId);
 $statement->bindValue(':pages_read', $pagesRead);
 $statement->bindValue(':last_page_read', $lastReadPage);
@@ -30,6 +33,7 @@ $statement->bindValue(':record_date_time', $readStartDate);
 $statement->execute();
 $statement->close();
 
+$db->close();
 print_r(json_encode("success"));
 
 ?>
